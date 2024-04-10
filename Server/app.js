@@ -1,18 +1,13 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import resSender from './controllers/user.controllers.js'
+import userRouter from './Routes/user.routes.js'
 
 dotenv.config({
     path: './.env'
 })
 
+app.use('/', userRouter)
+
 const app = express()
-
-
-app.get('/', resSender)
-
-
-
-
 
 export default app

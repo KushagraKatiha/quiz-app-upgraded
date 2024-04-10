@@ -65,33 +65,23 @@ const userSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
+userSchema.pre('save', async function(next){
 
-userSchema.pre('save', async(next)=>{
     if(!this.isModified('password')){
         next()
     }
-    try{
-        this.password = await bcrypt.hash(this.password, 10)
-        next()
-    }catch(error){
-        next(error)
-    }
+
+    const salt = await bcrypt.genSalt(10)
+    this.password = await bcrypt.hash(this.password, salt)
+    next()
 })
 
 userSchema.methods.checkPassword = async function(password){
-    try{
-        return await bcrypt.compare(password, this.password)
-    }catch(error){
-        throw new Error(error)
-    }
+    return await bcrypt.compare(password, this.password)
 }
 
 userSchema.methods.generateAccessToken = async function(){
     return JWT.sign({id: this._id}, process.env.JWT_SECRET, {expiresIn: '1d'})
-}
-
-userSchema.methods.generateRefreshToken = function(){
-    return JWT.sign({id: this._id}, process.env.REFRESH_TOKEN_SECRET, {expiresIn: process.env.REFRESH_TOKEN_EXPIRY})
 }
 
 userSchema.methods.generateForgetPasswordToken = function(){
@@ -101,6 +91,5 @@ userSchema.methods.generateForgetPasswordToken = function(){
     this.forgetPasswordTokenExpiry = forgetPasswordTokenExpiry
     return forgetPasswordToken
 }
-
 
 export default mongoose.model('User', userSchema)
