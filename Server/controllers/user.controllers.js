@@ -4,7 +4,7 @@ import emailValidator from 'email-validator'
 import ApiResponse from '../utils/ApiResponse.js'
 import asyncHandler from '../utils/asyncHandler.js'
 
-const register = asyncHandler(async (req, res, next) => {
+const register = asyncHandler(async (req, res) => {
     const {name, email, password, confirmPassword, type} = req.body
 
     if([name, email, password, confirmPassword, type].some(field => field.trim() === '')){
@@ -42,7 +42,7 @@ const register = asyncHandler(async (req, res, next) => {
     res.status(201).json(new ApiResponse(201, 'User created successfully', true, userToBeSent))
 })
 
-const login = asyncHandler(async (req, res, next) => {
+const login = asyncHandler(async (req, res) => {
     const {email, password} = req.body
     if([email, password].some(field => field.trim() === '')){
         throw new ApiError(400, 'All fields are required', false)
@@ -58,7 +58,7 @@ const login = asyncHandler(async (req, res, next) => {
         throw new ApiError(400, 'Invalid email or password', false)
     }
 
-    const token = await user.generateAccessToken()
+    const accessToken = await user.generateAccessToken()
 
     const cookieOptions = {
         expireIn: process.env.JWT_EXPIRY,
@@ -67,5 +67,101 @@ const login = asyncHandler(async (req, res, next) => {
 
     const userToBeSent = await User.findById(user._id).select('-password')
 
-    res.status(200).cookie('token', token, cookieOptions).json(new ApiResponse(200, 'Login successful', true, userToBeSent ))
+    res.status(200).cookie('accessToken', accessToken, cookieOptions).json(new ApiResponse(200, 'Login successful', true, userToBeSent ))
+})
+
+const logout = asyncHandler(async (req, res) => {
+    res.clearCookie('accessToken').json(new ApiResponse(200, 'Logout successful', true, null))
+})
+
+const deleted = asyncHandler(async (req, res) => {
+    const user = req.user
+    if(!user){
+        throw new ApiError(404, 'User not found', false)
+    }
+
+    const deletedUser = await User.findByIdAndDelete(user._id, {new: true})
+
+    if(!deletedUser){
+        throw new ApiError(500, 'Failed to delete user', false)
+    }
+
+    res.status(200).json(new ApiResponse(200, 'User deleted successfully', true, {name: deletedUser.name, email: deletedUser.email}))
+    
+})
+
+const update = asyncHandler(async (req, res) => {
+    const user = req.user
+    if(!user){
+        throw new ApiError(404, 'User not found', false)
+    }
+
+    const {name, email} = req.body
+    if(!name){
+        // if there is no name in the request body, we will update only the email
+        // check if the email is valid and unregisterd
+        if(!emailValidator.validate(email)){
+            throw new ApiError(400, 'Invalid email address', false)
+        }
+
+        const userExisted = await User.findOne({email}).select('-password')
+        if(userExisted){
+            throw new ApiError(400, 'User with this email already exists', false)
+        }
+
+        user.email = email
+        await user.save({validateBeforeSave: false})
+        res.status(200).json(new ApiResponse(200, 'User updated successfully', true, {name: user.name, email: user.email}))
+    }
+
+    if(!email){
+        // if there is no email in the request body, we will update only the name
+        user.name = name
+        await user.save({validateBeforeSave: false})
+        res.status(200).json(new ApiResponse(200, 'User updated successfully', true, {name: user.name, email: user.email}))
+    }
+
+    if(name && email){
+        if(!emailValidator.validate(email)){
+            throw new ApiError(400, 'Invalid email address', false)
+        }
+
+        const userExisted = await User.findOne({email}).select('-password')
+        if(userExisted){
+            throw new ApiError(400, 'User with this email already exists', false)
+        }
+
+        user.name = name
+        user.email = email
+        await user.save({validateBeforeSave: false})
+        res.status(200).json(new ApiResponse(200, 'User updated successfully', true, {name: user.name, email: user.email}))
+    }
+
+})
+
+const updatePassword = asyncHandler(async (req, res) => {
+    const user = req.user
+    if(!user){
+        throw new ApiError(404, 'User not found', false)
+    }
+
+    const {currentPassword, newPassword, confirmPassword} = req.body
+    if([currentPassword, newPassword, confirmPassword].some(field => field.trim() === '')){
+        throw new ApiError(400, 'All fields are required', false)
+    }
+
+    const isPasswordMatched = await user.checkPassword(currentPassword)
+
+    if(!isPasswordMatched){
+        throw new ApiError(400, 'Invalid current password', false)
+    }
+
+    if(newPassword !== confirmPassword){
+        throw new ApiError(400, 'Passwords do not match', false)
+    }
+
+    user.password = newPassword
+    await user.save()
+
+    res.status(200).json(new ApiResponse(200, 'Password updated successfully', true, null))
 })
