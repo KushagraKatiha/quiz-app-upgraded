@@ -3,6 +3,7 @@ import ApiError from '../utils/ApiError.js'
 import emailValidator from 'email-validator'
 import ApiResponse from '../utils/ApiResponse.js'
 import asyncHandler from '../utils/asyncHandler.js'
+import uploadToCloudinary from '../utils/cloudinary.js'
 
 const register = asyncHandler(async (req, res) => {
     const {name, email, password, confirmPassword, type} = req.body
@@ -164,4 +165,31 @@ const updatePassword = asyncHandler(async (req, res) => {
     await user.save()
 
     res.status(200).json(new ApiResponse(200, 'Password updated successfully', true, null))
+})
+
+const uploadImage = asyncHandler(async (req, res) => {
+    // Check if user is logged In 
+    const user = req.user
+    if(!user){
+        throw new ApiError(404, 'User not found', false)
+    }
+
+    // Check if the file is uploaded
+    if(!req.file){
+        throw new ApiError(400, 'Please upload a file', false)
+    }
+
+    const profileImgPath = req.files?.profileImage[0]?.path
+    const coverImgPath = req.files?.coverImage[0]?.path
+    // upload the file to the cloudinary 
+
+    const profileImg = await uploadToCloudinary(profileImgPath)
+    const coverImg = await uploadToCloudinary(coverImgPath)
+
+    user.profileImage = profileImg?.url || user.profileImage
+    user.coverImage = coverImg?.url || user.coverImage
+
+    await user.save()
+
+    res.status(200).json(new ApiResponse(200, 'Image uploaded successfully', true, {profileImage: user.profileImage, coverImage: user.coverImage}))
 })

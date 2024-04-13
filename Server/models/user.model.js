@@ -30,27 +30,11 @@ const userSchema = new mongoose.Schema({
     },
 
     profileImg:{
-        public_url:{
-            type: String,
-            default: null
-        },
-
-        secure_url:{
-            type: String,
-            default: null
-        }
+        type: String,   // cloudinary url
     },
 
     coverImg:{
-        public_url:{
-            type: String,
-            default: null
-        },
-
-        secure_url:{
-            type: String,
-            default: null
-        }
+        type: String,   // cloudinary url
     }, 
 
     forgetPasswordToken:{
