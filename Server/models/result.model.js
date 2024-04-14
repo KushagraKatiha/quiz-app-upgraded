@@ -11,10 +11,8 @@ const resultSchema = new mongoose.Schema({
         required: true
     },
 
-    test:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Test',
-        required: true
+    subject:{
+        type: String
     },
 
     student:{

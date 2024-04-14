@@ -4,6 +4,7 @@ import emailValidator from 'email-validator'
 import ApiResponse from '../utils/ApiResponse.js'
 import asyncHandler from '../utils/asyncHandler.js'
 import uploadToCloudinary from '../utils/cloudinary.js'
+import sendMail from '../utils/sendEmail.js'
 
 const register = asyncHandler(async (req, res) => {
     const {name, email, password, confirmPassword, type} = req.body
@@ -193,3 +194,62 @@ const uploadImage = asyncHandler(async (req, res) => {
 
     res.status(200).json(new ApiResponse(200, 'Image uploaded successfully', true, {profileImage: user.profileImage, coverImage: user.coverImage}))
 })
+
+const forgetPassword = asyncHandler(async (req, res) => {
+    const {email} = req.body
+    if(!email){
+        throw new ApiError(400, 'Email is required', false)
+    }
+
+    const user = await User.find({email})
+    if(!user){
+        throw new ApiError(404, 'User not found', false)
+    }
+
+    const forgetPasswordToken = await user.generateForgetPasswordToken()
+
+    await user.save()
+
+    const resetPasswordLink = `http://localhost:${process.env.PORT}/user/reset-password/${forgetPasswordToken}`
+    const content = `Click on the link below to reset your password\n${resetPasswordLink}`
+    await sendMail(email, 'Reset Password', content)
+
+    res.status(200).json(new ApiResponse(200, 'Forget password email sent successfully', true, null))
+})
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const {forgetPasswordToken} = req.params
+    const {newPassword, confirmPassword} = req.body
+    if([forgetPasswordToken, newPassword, confirmPassword].some(field => field.trim() === '')){
+        throw new ApiError(400, 'All fields are required', false)
+    }
+
+    if(newPassword !== confirmPassword){
+        throw new ApiError(400, 'Passwords do not match', false)
+    }
+
+    const user = await User.find({forgetPasswordToken}, {forgetPasswordTokenExpiry: {$gt: Date.now()}})
+    if(!user){
+        throw new ApiError(404, 'User not found', false)
+    }
+
+    user.password = newPassword
+    user.forgetPasswordToken = null
+    user.forgetPasswordTokenExpiry = null
+
+    await user.save()
+
+    res.status(200).json(new ApiResponse(200, 'Password reset successfully', true, null))
+})
+
+export {
+    register,
+    login,
+    logout,
+    deleted,
+    update,
+    updatePassword,
+    uploadImage,
+    forgetPassword,
+    resetPassword
+}
