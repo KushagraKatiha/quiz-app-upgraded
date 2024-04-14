@@ -13,19 +13,19 @@ import {
 
 function SignUpPage() {
     return (
-        <div className='bg-b w-full h-full flex justify-center items-center'>
+        <div className='h-screen flex justify-center items-center'>
             {/* Left Block */}
-            <div className='w-3/5'>
-                <div>
-                    <img src="/src/assets/graph.png" alt="logo" />
-                    <h1>THE QUIZEEE</h1>
+            <div className='h-full w-3/5 bg-black hover:bg-dark text-blue p-10'>
+                <div className='flex items-center'>
+                    <img src="/src/assets/graph.png" alt="logo" className='w-1/12'/>
+                    <h1 className='text-sm font-bold'>THE QUIZEEE</h1>
                 </div>
 
-                <div>
-                    <img src="src/assets/logo-white.png" alt="main-logo" />
+                <div className='flex justify-center items-center'>
+                    <img src="src/assets/main-logo.png" alt="main-logo" className='w-1/2'/>
                 </div>
 
-                <div>
+                <div className='text-xs font-semibold mt-6'>
                     <h2>Conducting Quizes Made Easy !!!!</h2>
                     <p>Set and Take The Time Based Quizes on the Go...</p>
                 </div>
@@ -34,35 +34,39 @@ function SignUpPage() {
             {/* _______________________________________________________________________________________________________ */}
 
             {/* Right Block */}
-            <div className='w-2/5'>
-                <div>
-                    <Button variant="ghost">Login</Button>
+            <div className='h-full w-2/5 bg-black hover:bg-dark text-green p-10'>
+                <div className='text-right'>
+                    <Button className='hover:bg-brown h-1/6' variant="ghost">Login</Button>
                 </div>
 
                 {/* Signup Form */}
-                <h1>Create an account</h1>
-                <p>Enter your details below to create your account</p>
+              <div className='flex flex-col items-center justify-center'>
+                <h1 className='font-extrabold text-2xl'>Create an account</h1>
+                <p className='font-semibold text-center text-xs text-brown'>Enter your details below to create your account or login if already registered !</p>
 
-                <Input type="text" placeholder="name" />
-                <Input type="email" placeholder="email" />
+                <div className='w-full flex flex-col gap-2 my-2 text-blue'>
+                    <Input className='bg-transparent h-1/6' type="text" placeholder="Name" />
+                    <Input className='bg-transparent h-1/6' type="email" placeholder="Email" />
 
-                <Select>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Role</SelectLabel>
-                            <SelectItem value="teacher">Teacher</SelectItem>
-                            <SelectItem value="student">Student</SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+                    <Select>
+                        <SelectTrigger className="bg-transparent">
+                            <SelectValue placeholder="Role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Role</SelectLabel>
+                                <SelectItem value="teacher">Teacher</SelectItem>
+                                <SelectItem value="student">Student</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
 
-                <Input type="password" placeholder="password" />
-                <Input type="password" placeholder="confirm password" />
+                    <Input className='bg-transparent h-1/6' type="password" placeholder="Password" />
+                    <Input className='bg-transparent h-1/6' type="password" placeholder="Confirm Password" />
 
-                <Button variant="outline">Sign Up</Button>
+                </div>
+                <Button className='hover:bg-brown h-1/6' variant="ghost">Sign Up</Button>
+              </div>
 
             </div>
         </div>

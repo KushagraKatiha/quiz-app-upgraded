@@ -17,10 +17,12 @@ module.exports = {
       },
     },
     colors: {
-      'grey': '#201f21',
+      'black': '#000',
+      'transparent': 'transparent',
+      'dark': '#201f21',
       'brown': '#785a2a',
       'green': '#73a428',
-      'b': '#0986cd'
+      'blue': '#0986cd'
     },
     extend: {
       colors: {
