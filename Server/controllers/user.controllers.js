@@ -9,6 +9,7 @@ import sendMail from '../utils/sendEmail.js'
 const register = asyncHandler(async (req, res) => {
     const {name, email, password, confirmPassword, type} = req.body
 
+ 
     if([name, email, password, confirmPassword, type].some(field => field.trim() === '')){
         throw new ApiError(400, 'All fields are required', false)
     }
@@ -42,6 +43,7 @@ const register = asyncHandler(async (req, res) => {
     user.save()
 
     res.status(201).json(new ApiResponse(201, 'User created successfully', true, userToBeSent))
+ 
 })
 
 const login = asyncHandler(async (req, res) => {
