@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { useState } from 'react'
 import { signUpSchema } from '@/Schemas/signUpSchema'
 import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
@@ -17,12 +16,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import LoginPage from './LoginPage'
 
 function SignUpPage() {
-    const [btnVisiblity, setBtnVisiblity] = useState(false);
-    const toogleBtn = () => {
-        setBtnVisiblity(!btnVisiblity);
+    const [visibility, setVisiblity] = useState(false);
+
+    const toogleVisibility = () => {
+        console.log(`Visiblity before: ${visibility}`);
+        setVisiblity(!visibility);
+        console.log(`Visiblity after: ${visibility}`);
     }
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -36,20 +40,17 @@ function SignUpPage() {
     const successTost = (message) => toast.success(message);
 
     const handleInputChange = (e) => {
-        console.log(e);
-
         if (e == 'student' || e == 'teacher') {
             setFormData({ ...formData, type: e });
             setErrors({ ...errors, type: '' });
-            console.log(formData);
+            console.log("errors", errors);
         } else {
             const { name, value } = e.target;
             setFormData({ ...formData, [name]: value });
             setErrors({ ...errors, [name]: '' });
-            console.log(formData);
+            console.log("errors", errors);
         }
     };
-
 
     const handleSubmit = () => {
         try {
@@ -58,6 +59,7 @@ function SignUpPage() {
             // If validation succeeds, hit the API endpoint
             // and set the error messages to the response
             console.log(formData);
+            console.log("Errors", errors);
             axios.post('/api/user/register', formData, {
                 withCredentials: true
             })
@@ -92,21 +94,21 @@ function SignUpPage() {
 
 
     return (
-        <div className='h-screen flex justify-center items-center bg-black'>
+        <div className='h-screen flex-row md:flex justify-center items-center'>
 
             {/* Left Block */}
 
-            <div className='h-full w-3/5 bg-black hover:bg-dark text-blue p-10 pt-5'>
-                <div className='flex items-center'>
+            <div className={`h-auto md:h-full flex flex-row-reverse md:block w-full md:w-3/5 bg-black hover:bg-dark text-blue md:p-10`}>
+                <div className='items-center hidden md:flex'>
                     <img src="/src/assets/graph.png" alt="logo" className='w-1/12' />
-                    <h1 className='text-sm font-bold'>THE QUIZEEE</h1>
+                    <h1 className='md:text-sm text-2xl font-bold'>THE QUIZEEE</h1>
                 </div>
 
                 <div className='flex justify-center items-center'>
-                    <img src="src/assets/main-logo.png" alt="main-logo" className='w-1/2' />
+                    <img src="src/assets/main-logo.png" alt="main-logo" className='md:w-1/2 w-1/4' />
                 </div>
 
-                <div className='text-xs font-semibold mt-6'>
+                <div className='text-xs font-semibold mt-6 md:block hidden'>
                     <h2>Conducting Quizes Made Easy !!!!</h2>
                     <p>Set and Take The Time Based Quizes on the Go...</p>
                 </div>
@@ -114,10 +116,10 @@ function SignUpPage() {
 
 
             {/* Right Block */}
-            <div className='h-full w-2/5 bg-black hover:bg-dark  p-10 pt-5'>
+            <div className={`h-full md:h-full w-full md:w-2/5 bg-black hover:bg-dark p-10 md:p-10 ${(!visibility)? 'visible':'hidden'}`}>
                 {/* Right Block Content */}
                 <div className='text-right'>
-                    <Button variant="ghost" className='text-blue hover:bg-blue hover:text-black'>Login</Button>
+                    <Button variant="ghost" className='text-blue hover:bg-blue hover:text-black' onClick={toogleVisibility}>Login</Button>
                 </div>
                 <div className='flex flex-col items-center justify-center'>
                     <h1 className='font-extrabold text-2xl text-green'>Create an account</h1>
@@ -178,13 +180,11 @@ function SignUpPage() {
                         {errors.confirmPassword && <span className="text-red text-xs">{errors.confirmPassword}</span>}
 
                     </div>
-                    <Button className={`hover:bg-brown h-1/6 text-green ${(!btnVisiblity) ? 'visible' : 'hidden'}`} variant="ghost" onClick={handleSubmit}>Sign Up</Button>
-                    <Button className={`${(btnVisiblity) ? `visible` : `hidden`}`} disabled>
-                        <Loader2 className={`mr-2 h-4 w-4 animate-spin ${(btnVisiblity) ? 'visible' : 'hidden'}`} />
-                        Please wait
-                    </Button>
+                    <Button className={`hover:bg-brown h-1/6 text-green`} variant="ghost" onClick={handleSubmit}>Sign Up</Button>
                 </div>
             </div>
+
+            <LoginPage display={visibility ? 'visible' : 'hidden'} position={`md:pt-24 pt-10 p-5 h-full md:h-full`} toogleVisibility={toogleVisibility}/>
             <ToastContainer
                 position="top-right"
                 autoClose={5000}
