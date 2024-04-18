@@ -46,7 +46,7 @@ function LoginPage({
                     successTost(response.data.message);
                 })
                 .catch((error) => {
-                    console.log("Error", error.response.data);
+                    console.log("Error", error.response);
                     errorTost(error.response.data.message);
                     setErrors(error.response.data.errors);
                 });
@@ -83,7 +83,7 @@ function LoginPage({
                             value={formData.email}
                             onChange={handleInputChange}
                         />
-                        {errors.email && <span className="text-red text-xs">{errors.email}</span>}
+                        {errors?.email && <span className="text-red text-xs">{errors.email}</span>}
 
                         <Input
                             className='bg-transparent h-1/6'
@@ -93,7 +93,7 @@ function LoginPage({
                             value={formData.password}
                             onChange={handleInputChange}
                         />
-                        {errors.password && <span className="text-red text-xs">{errors.password}</span>}
+                        {errors?.password && <span className="text-red text-xs">{errors.password}</span>}
 
                     </div>
                     <Button className={`hover:bg-brown h-1/6 text-green`} variant="ghost" onClick={handleSignIn}>Sign In</Button>

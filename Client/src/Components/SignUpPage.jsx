@@ -58,27 +58,30 @@ function SignUpPage() {
             signUpSchema.parse(formData);
             // If validation succeeds, hit the API endpoint
             // and set the error messages to the response
-            console.log(formData);
-            console.log("Errors", errors);
             axios.post('/api/user/register', formData, {
                 withCredentials: true
             })
-                .then((response) => {
-                    console.log("HEllo response", response.data);
-                    successTost(response.data.message);
-                    if (response.data.success) {
-                        setFormData({
-                            name: '',
-                            email: '',
-                            type: '',
-                            password: '',
-                            confirmPassword: '',
-                        });
-                    }
-                }).catch((error) => {
+            .then((response) => {
+                console.log("Hello response", response.data);
+                successTost(response.data.message);
+                if (response.data.success) {
+                    setFormData({
+                        name: '',
+                        email: '',
+                        type: '',
+                        password: '',
+                        confirmPassword: '',
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error("Hello Error=>", error);
+                if (error.response && error.response.data && error.response.data.message) {
                     errorTost(error.response.data.message);
-                    console.error(error.response.data.message);
-                })
+                } else {
+                    errorTost("An error occurred while processing your request.");
+                }
+            });
         } catch (error) {
             // If validation fails, set the error messages
             if (error instanceof z.ZodError) {
@@ -91,6 +94,47 @@ function SignUpPage() {
             }
         }
     };
+    
+
+    // const handleSubmit = () => {
+    //     try {
+    //         // Validate the form data
+    //         signUpSchema.parse(formData);
+    //         // If validation succeeds, hit the API endpoint
+    //         // and set the error messages to the response
+    //         console.log(formData);
+    //         console.log("Errors", errors);
+    //         axios.post('/api/user/register', formData, {
+    //             withCredentials: true
+    //         })
+    //             .then((response) => {
+    //                 console.log("HEllo response", response.data);
+    //                 successTost(response.data.message);
+    //                 if (response.data.success) {
+    //                     setFormData({
+    //                         name: '',
+    //                         email: '',
+    //                         type: '',
+    //                         password: '',
+    //                         confirmPassword: '',
+    //                     });
+    //                 }
+    //             }).catch((error) => {
+    //                 // errorTost(error.response.data.message);
+    //                 console.error("Hello Error=>",error);
+    //             })
+    //     } catch (error) {
+    //         // If validation fails, set the error messages
+    //         if (error instanceof z.ZodError) {
+    //             const fieldErrors = {};
+    //             error.errors.forEach((err) => {
+    //                 const path = err.path.join('.');
+    //                 fieldErrors[path] = err.message;
+    //             });
+    //             setErrors(fieldErrors);
+    //         }
+    //     }
+    // };
 
 
     return (
@@ -105,7 +149,7 @@ function SignUpPage() {
                 </div>
 
                 <div className='flex justify-center items-center'>
-                    <img src="src/assets/main-logo.png" alt="main-logo" className='md:w-1/2 w-1/4' />
+                    <img src="src/assets/main-logo.png" alt="main-logo" className='md:w-1/2 w-1/2' />
                 </div>
 
                 <div className='text-xs font-semibold mt-6 md:block hidden'>
@@ -184,7 +228,9 @@ function SignUpPage() {
                 </div>
             </div>
 
-            <LoginPage display={visibility ? 'visible' : 'hidden'} position={`md:pt-24 pt-10 p-5 h-full md:h-full`} toogleVisibility={toogleVisibility}/>
+            {visibility && (
+                <LoginPage display={visibility ? 'visible' : 'hidden'} position={`md:pt-24 pt-10 p-5 h-full md:h-full`} toogleVisibility={toogleVisibility}/>
+            )}
             <ToastContainer
                 position="top-right"
                 autoClose={5000}

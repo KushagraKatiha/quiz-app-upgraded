@@ -89,7 +89,7 @@ const getQuestionsAsAStudent = asyncHandler(async (req, res) => {
 
     const {subject, teacherName} = req.body
     
-    const questions = await Question.find({subject, teacher: teacherName})
+    const questions = await Question.find({subject, teacher: teacherName}).select('-correctOption -explanation')
 
     if(!questions){
         throw new ApiError(404, 'No questions found', false)
@@ -99,7 +99,7 @@ const getQuestionsAsAStudent = asyncHandler(async (req, res) => {
 
 })
 
-const deleteQuestions = asyncHandler(async (req, res) => {
+const deleteQuestionsofASubject = asyncHandler(async (req, res) => {
     // Check if user is logged in
     if(!req.user){
         throw new ApiError(401, 'Unauthorized', false)
@@ -112,7 +112,7 @@ const deleteQuestions = asyncHandler(async (req, res) => {
 
     const {subject} = req.body
 
-    const questions = await Question.find({subject, teacher: req.user._id})
+    const questions = await Question.find({subject, teacher: req.user._id}).select('-correctOption -explanation')
 
     if(!questions || questions.length === 0){
         throw new ApiError(404, 'Question not found', false)
@@ -134,7 +134,7 @@ const deleteAllQuestions = asyncHandler(async (req, res) => {
         throw new ApiError(403, 'Forbidden', false)
     }
 
-    const questions = await Question.find({teacher: req.user._id})
+    const questions = await Question.find({teacher: req.user._id}).select('-correctOption -explanation')
 
     if(!questions || questions.length === 0){
         throw new ApiError(404, 'Question not found', false)
@@ -149,6 +149,6 @@ export {
     createQuestions,
     getAllQuestionsAsATeacher,
     getQuestionsAsAStudent,
-    deleteQuestions,
+    deleteQuestionsofASubject,
     deleteAllQuestions
 }
