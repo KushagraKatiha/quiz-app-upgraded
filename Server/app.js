@@ -1,7 +1,8 @@
 import express from 'express'
 import dotenv from 'dotenv'
-// import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import userRouter from './Routes/user.routes.js'
+import testRouter from './Routes/test.routes.js'
 
 dotenv.config({
     path: './.env'
@@ -9,26 +10,13 @@ dotenv.config({
 const app = express()
 
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
-
-// app.use((err, req, res, next) => {
-//     if (err instanceof ApiError) {
-//       res.status(err.statusCode).json({
-//         success: err.success,
-//         message: err.message,
-//         data: err.data
-//       });
-//     } else {
-//       // Handle other types of errors
-//       res.status(500).json({
-//         success: false,
-//         message: "Internal Server Error"
-//       });
-//     }
-//   });
-  
+app.use(express.urlencoded({extended: true}))  
+app.use(cookieParser())
 
 app.use('/api/user', userRouter)
 // localhost:5000/api/user/USER_ROUTER
+
+app.use('/api/test', testRouter)
+// localhost:5000/api/test/TEST_ROUTER
 
 export default app

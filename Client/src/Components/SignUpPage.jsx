@@ -75,7 +75,7 @@ function SignUpPage() {
                 }
             })
             .catch((error) => {
-                console.error("Hello Error=>", error);
+                console.error("Hello Error=>", error.response.data.message);
                 if (error.response && error.response.data && error.response.data.message) {
                     errorTost(error.response.data.message);
                 } else {
@@ -95,48 +95,6 @@ function SignUpPage() {
         }
     };
     
-
-    // const handleSubmit = () => {
-    //     try {
-    //         // Validate the form data
-    //         signUpSchema.parse(formData);
-    //         // If validation succeeds, hit the API endpoint
-    //         // and set the error messages to the response
-    //         console.log(formData);
-    //         console.log("Errors", errors);
-    //         axios.post('/api/user/register', formData, {
-    //             withCredentials: true
-    //         })
-    //             .then((response) => {
-    //                 console.log("HEllo response", response.data);
-    //                 successTost(response.data.message);
-    //                 if (response.data.success) {
-    //                     setFormData({
-    //                         name: '',
-    //                         email: '',
-    //                         type: '',
-    //                         password: '',
-    //                         confirmPassword: '',
-    //                     });
-    //                 }
-    //             }).catch((error) => {
-    //                 // errorTost(error.response.data.message);
-    //                 console.error("Hello Error=>",error);
-    //             })
-    //     } catch (error) {
-    //         // If validation fails, set the error messages
-    //         if (error instanceof z.ZodError) {
-    //             const fieldErrors = {};
-    //             error.errors.forEach((err) => {
-    //                 const path = err.path.join('.');
-    //                 fieldErrors[path] = err.message;
-    //             });
-    //             setErrors(fieldErrors);
-    //         }
-    //     }
-    // };
-
-
     return (
         <div className='h-screen flex-row md:flex justify-center items-center'>
 
@@ -170,7 +128,7 @@ function SignUpPage() {
                     <p className='font-semibold text-center text-xs text-brown'>Enter your details below to create your account or login if already registered !</p>
 
                     <div className='w-full flex flex-col gap-2 my-2 text-blue'>
-                        <Input
+                        <Input autoComplete= "off"
                             className='bg-transparent h-1/6'
                             type="text"
                             placeholder="Name"
@@ -180,7 +138,7 @@ function SignUpPage() {
                         />
                         {errors.name && <span className="text-red text-xs">{errors.name}</span>}
 
-                        <Input
+                        <Input autoComplete= "off"
                             className='bg-transparent h-1/6'
                             type="email"
                             placeholder="Email"
@@ -203,7 +161,7 @@ function SignUpPage() {
                         </Select>
                         {errors && errors.type && <span className="text-red text-xs">{errors.type}</span>}
 
-                        <Input
+                        <Input autoComplete= "off"
                             className='bg-transparent h-1/6'
                             type="password"
                             placeholder="Password"
@@ -213,7 +171,7 @@ function SignUpPage() {
                         />
                         {errors.password && <span className="text-red text-xs">{errors.password}</span>}
 
-                        <Input
+                        <Input autoComplete= "off"
                             className='bg-transparent h-1/6'
                             type="password"
                             placeholder="Confirm Password"

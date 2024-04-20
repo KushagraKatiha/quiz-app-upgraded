@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
 
 function LoginPage({
@@ -40,7 +41,7 @@ function LoginPage({
             axios.post('/api/user/login', formData, {
                 withCredentials: true
             })
-                .then((response) => {   
+                .then((response) => {
                     console.log(response);
                     console.log("HEllo response", response.data);
                     successTost(response.data.message);
@@ -63,8 +64,8 @@ function LoginPage({
     }
 
     return (
-            <>
-            {/* Left Block */}      
+        <>
+            {/* Left Block */}
             <div className={`h-full md:h-full w-full md:w-2/5 bg-black hover:bg-dark md:p-10 pt-5 ${display} ${position}`}>
                 {/* Right Block Content */}
                 <div className='text-right'>
@@ -75,7 +76,7 @@ function LoginPage({
                     <p className='font-semibold text-center text-xs text-brown'>Enter your details below to proceed ahead !!</p>
 
                     <div className='w-full flex flex-col gap-2 my-2 text-blue'>
-                        <Input
+                        <Input autoComplete="off"
                             className='bg-transparent h-1/6'
                             type="email"
                             placeholder="Email"
@@ -85,7 +86,7 @@ function LoginPage({
                         />
                         {errors?.email && <span className="text-red text-xs">{errors.email}</span>}
 
-                        <Input
+                        <Input autoComplete="off"
                             className='bg-transparent h-1/6'
                             type="password"
                             placeholder="Password"

@@ -1,19 +1,12 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { Drawer } from 'vaul';
-// import {
-//     Drawer,
-//     DrawerClose,
-//     DrawerContent,
-//     DrawerDescription,
-//     DrawerFooter,
-//     DrawerHeader,
-//     DrawerTitle,
-//     DrawerTrigger,
-// } from "@/components/ui/drawer"
-
+import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Card, CardContent } from "@/components/ui/card"
 import Autoplay from "embla-carousel-autoplay"
+import UpdateProfilePage from './UpdateProfilePage';
 
 import {
     Carousel,
@@ -27,6 +20,11 @@ import { Button } from '@/components/ui/button'
 
 function Dashboard() {
     const [greet, setGreet] = useState('')
+    const [user, setUser] = useState({})
+    const [btnDisplay, setBtnDisplay] = useState('false')
+    const [carouselDisplay, setCarouselDisplay] = useState('true')
+    const [questions, setQuestions] = useState([])
+    const [errText, setErrText] = useState('false')
 
     const dummyData = [
         {
@@ -55,6 +53,9 @@ function Dashboard() {
         },
     ]
 
+    const errorTost = (message) => toast.error(message);
+    const successTost = (message) => toast.success(message);
+
     useEffect(() => {
         const date = new Date()
         const hour = date.getHours()
@@ -65,7 +66,55 @@ function Dashboard() {
         } else {
             setGreet('Good Evening')
         }
-    })
+
+        axios.get('/api/user/me')
+            .then((response) => {
+                setUser(response.data.data)
+                if (response.data.data.type === 'teacher') {
+                    setBtnDisplay(!btnDisplay)
+                    axios.get('/api/test/teacher/get')
+                        .then((response) => {
+                            console.log(response.data.data);
+                            if (!response.data.data) {
+                                setQuestions(["NO QUESTIONS AVAILABLE"])
+                            }
+                            setQuestions(response.data.data)
+                        }).catch((error) => {
+                            console.log("Error from questions api: ", error.response.data.message)
+                            setErrText(!errText)
+                            setQuestions(["NO QUESTIONS AVAILABLE"])
+                        })
+                } else {
+                    setCarouselDisplay(!carouselDisplay)
+
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+
+
+    }, [])
+
+    const handleDeleteAccount = () => {
+        axios.delete('/api/user/delete')
+            .then((response) => {
+                console.log(response)
+            }).catch((error) => {
+                console.log(error)
+                errorTost(error.response.data.message)
+            })
+    }
+
+    const handleSignOut = () => {
+        axios.get('/api/user/logout')
+            .then((response) => {
+                console.log(response)
+            }).catch((error) => {
+                console.log(error)
+                errorTost(error.response.data.message)
+            })
+    }
 
     return (
         <div style={{ minHeight: '100vh' }} className='h-full bg-black text-white'>
@@ -82,12 +131,12 @@ function Dashboard() {
                         <img src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600" alt="profile_img" />
                     </div>
                     <div className='ml-2 md:ml-3 -mt-14'>
-                        <h1 className='text-green text-xl font-bold '>SHIVANSH MISHRA <span className='text-brown text-xs font-light'>teacher</span></h1>
-                        <p className='text-xs'>shivansh@gmail.com</p>
+                        <h1 className='text-green text-xl font-bold '>{user && user.name || 'YOUR_NAME'}<span className='text-brown text-xs font-light'>{" "}{user.type}</span></h1>
+                        <p className='text-xs'>{user.email}</p>
                     </div>
                 </div>
                 {/* Left Pannel */}
-                <div className='w-full h-full md:w-4/5 pb-5 pt-20'>
+                <div className='w-full min-h-full md:w-4/5 pb-5 pt-20 border-r-4'>
                     {/* Name and other buttons */}
                     <div className='flex flex-col gap-5 md:gap-0 mt-24 md:mt-0 justify-center items-center'>
                         <div className='mt-2 ml-1 md:ml-3 flex flex-col gap-2 justify-center items-center'>
@@ -97,56 +146,57 @@ function Dashboard() {
 
                         {/* Buttons and Drawer Option */}
                         <div className='mt-5 ml-1 flex flex-col md:flex-row gap-8 md:gap-5'>
-                            <Button className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black`} variant="outline">Set Exams</Button>
+                            <Button className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${btnDisplay ? 'hidden' : 'visible'}`} variant="outline">Set Exams</Button>
+                            <Button className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${!btnDisplay ? 'hidden' : 'visible'}`} variant="outline">Attempt Exams</Button>
                             <Button className={`bg-brown md:hover:bg-white h-1/6 text-white font-bold border-black`} variant="outline">View Results</Button>
                             {/* Drawer for mobile device only*/}
-                <div className='md:hidden flex justify-center items-center'>
-                    <Drawer.Root direction="right">
-                        <Drawer.Trigger asChild>
-                            <button>More &#x2192;</button>
-                        </Drawer.Trigger>
-                        <Drawer.Portal>
-                            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-                            <Drawer.Content className="bg-white flex flex-col rounded-t-[10px] h-full w-3/5 mt-24 fixed bottom-0 right-0">
-                                <div className="p-4 bg-white flex-1 h-full">
-                                    <div className="max-w-md mx-auto">
-                                        <Drawer.Title className="font-bold mb-4">
-                                            More Options
-                                        </Drawer.Title>
-                                        <p className="text-zinc-600 mb-2">
-                                            This component can be used as a replacement for a Dialog on
-                                            mobile and tablet devices.
-                                        </p>
-                                        <p className="text-zinc-600 mb-8">
-                                            It uses{" "}
-                                            <a
-                                                href="https://www.radix-ui.com/docs/primitives/components/dialog"
-                                                className="underline"
-                                                target="_blank"
-                                            >
-                                                Radix&rsquo;s Dialog primitive
-                                            </a>{" "}
-                                            under the hood and is inspired by{" "}
-                                            <a
-                                                href="https://twitter.com/devongovett/status/1674470185783402496"
-                                                className="underline"
-                                                target="_blank"
-                                            >
-                                                this tweet.
-                                            </a>
-                                        </p>
-                                    </div>
-                                </div>
-                            </Drawer.Content>
-                        </Drawer.Portal>
-                    </Drawer.Root>
-                </div>
+                            <div className='md:hidden flex justify-center items-center'>
+                                <Drawer.Root direction="right">
+                                    <Drawer.Trigger asChild>
+                                        <button>More &#x2192;</button>
+                                    </Drawer.Trigger>
+                                    <Drawer.Portal>
+                                        <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+                                        <Drawer.Content className="bg-white flex flex-col rounded-t-[10px] h-full w-3/5 mt-24 fixed bottom-0 right-0">
+                                            <div className="p-4 bg-white flex-1 h-full">
+                                                <div className="max-w-md mx-auto">
+                                                    <Drawer.Title className="font-bold mb-4">
+                                                        More Options
+                                                    </Drawer.Title>
+                                                    <p className="text-zinc-600 mb-2">
+                                                        This component can be used as a replacement for a Dialog on
+                                                        mobile and tablet devices.
+                                                    </p>
+                                                    <p className="text-zinc-600 mb-8">
+                                                        It uses{" "}
+                                                        <a
+                                                            href="https://www.radix-ui.com/docs/primitives/components/dialog"
+                                                            className="underline"
+                                                            target="_blank"
+                                                        >
+                                                            Radix&rsquo;s Dialog primitive
+                                                        </a>{" "}
+                                                        under the hood and is inspired by{" "}
+                                                        <a
+                                                            href="https://twitter.com/devongovett/status/1674470185783402496"
+                                                            className="underline"
+                                                            target="_blank"
+                                                        >
+                                                            this tweet.
+                                                        </a>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </Drawer.Content>
+                                    </Drawer.Portal>
+                                </Drawer.Root>
+                            </div>
                         </div>
-                        <h2 className='mt-2 hidden md:block'>Previous Questions</h2>
+                        <h2 className={`mt-2 hidden md:${carouselDisplay ? 'block' : 'hidden'}`}>Previous Questions</h2>
                     </div>
 
                     {/* To display some question set by the teacher */}
-                    <div className='hidden md:flex items-center justify-center mt-20 md:mt-1'>
+                    <div className={`hidden md:${carouselDisplay ? 'flex' : 'hidden'} items-center justify-center mt-20 md:mt-1 `}>
                         <Carousel
                             opts={{
                                 align: "start",
@@ -163,10 +213,10 @@ function Dashboard() {
                                     <CarouselItem key={index}>
                                         <div className="p-1">
                                             <Card className="bg-dark h-fit text-white">
-                                                <CardContent className=" flex gap-5 items-center justify-start pt-4">
+                                                <CardContent className={`${errText ? 'hidden' : 'flex'} gap-5 items-center justify-start pt-4`}>
                                                     <div className='flex flex-col flex-wrap'>
-                                                        <p className="text-base font-semibold">{index + 1} {dummyData[index].questionText}</p>
-                                                        {dummyData[index].options.map((option, index) => (
+                                                        <p className="text-base font-semibold">{index + 1} {dummyData[index]?.questionText}</p>
+                                                        {dummyData[index].options?.map((option, index) => (
                                                             <div className='flex flex-col' key={index}>
                                                                 <span className='text-sm'>{option}</span>
                                                             </div>
@@ -174,13 +224,16 @@ function Dashboard() {
                                                     </div>
                                                     <div className='flex flex-col'>
                                                         <p className='text-blue font-bold'>Correct Option: </p>
-                                                        <span className='text-sm font-normal'>{dummyData[index].correctOption}</span>
+                                                        <span className='text-sm font-normal'>{dummyData[index]?.correctOption}</span>
                                                     </div>
 
                                                     <div className='flex flex-col'>
                                                         <p className='text-green font-bold'>Explaintion: </p>
-                                                        <span className='font-normal'>{dummyData[index].explaintion}</span>
+                                                        <span className='font-normal'>{dummyData[index]?.explaintion}</span>
                                                     </div>
+                                                </CardContent>
+                                                <CardContent className={`justify-center items-center ${errText? 'flex' : 'hidden'}`}>
+                                                    <h1>NO QUESTIONS FOUND !!</h1>
                                                 </CardContent>
                                             </Card>
                                         </div>
@@ -194,17 +247,29 @@ function Dashboard() {
                 </div>
 
                 {/* Right Pannel */}
-                <div className='h-full hidden md:flex flex-col gap-32 justify-between items-center w-1/5 border-l-4 py-6'>
+                <div className='h-full hidden md:flex flex-col gap-32 justify-between items-center w-1/5 py-6'>
                     <div className='flex flex-col w-full h-full gap-10 items-center justify-between'>
-                        <Button className={`bg-transparent`} variant="outline">Update Profile</Button>
-                        <Button className={`bg-transparent`} variant="outline">Delete Questions</Button>
-                        <Button variant="destructive">Delete Account</Button>
+                        <UpdateProfilePage></UpdateProfilePage>
+                        <Button className={`bg-transparent ${btnDisplay}`} variant="outline">Delete Questions</Button>
+                        <Button onClick={handleDeleteAccount} variant="destructive">Delete Account</Button>
                     </div>
 
-                    <Button className="hover:bg-dark">Sign Out</Button>
+                    <Button className="hover:bg-dark" onClick={handleSignOut}>Sign Out</Button>
                 </div>
             </div>
-
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+                transition:Bounce
+            />
 
         </div>
     )

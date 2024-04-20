@@ -26,7 +26,6 @@ const register = asyncHandler(async (req, res, next) => {
         const userExisted = await User.findOne({ email });
         if (userExisted) {
             throw new ApiError(501, "User with this email already exists !", false);
-            next();
         }
 
         const user = await User.create({
@@ -91,16 +90,20 @@ const getUser = asyncHandler(async (req, res) => {
     
         res.status(200).json(new ApiResponse(200, 'User found', true, user));
     } catch (error) {
-        console.log(error);
+        console.log("Error from getUser: ", error);
         res.status(500).json(error);
     }
 });
 
 const logout = asyncHandler(async (req, res) => {
     try {
+        // Check if user is logged in 
+        if (!req.user) {
+            throw new ApiError(401, 'Can not logout !', false);
+        }
         res.clearCookie('accessToken').json(new ApiResponse(200, 'Logout successful', true, null));
     } catch (error) {
-        console.log(error);
+        console.log("Error from logout: ", error);
         res.status(500).json(error);
     }
 });
