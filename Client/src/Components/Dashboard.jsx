@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Card, CardContent } from "@/components/ui/card"
 import Autoplay from "embla-carousel-autoplay"
 import UpdateProfilePage from './UpdateProfilePage';
+import ProfileForm from './UpdatePasswordPage';
 
 import {
     Carousel,
@@ -120,7 +121,7 @@ function Dashboard() {
         <div style={{ minHeight: '100vh' }} className='h-full bg-black text-white'>
             {/* Top Part */}
             <div className='border-b-4 h-1/3 border-white overflow-hidden'>
-                <img src="https://images.pexels.com/photos/3560168/pexels-photo-3560168.jpeg?auto=compress&cs=tinysrgb&w=600" alt="cover_image" className='h-32 w-full' />
+                <img src={user?.coverImg || "https://images.pexels.com/photos/3560168/pexels-photo-3560168.jpeg?auto=compress&cs=tinysrgb&w=600"} alt="cover_image" className='h-32 w-full' />
             </div>
 
             {/* Hero Section */}
@@ -128,7 +129,7 @@ function Dashboard() {
                 <div className='ml-2 absolute top-32'>
                     {/* profile image container */}
                     <div className='rounded-full border-4 overflow-hidden border-solid w-36 relative bottom-16'>
-                        <img src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600" alt="profile_img" />
+                        <img src={user?.profileImg || "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600"} alt="profile_img" />
                     </div>
                     <div className='ml-2 md:ml-3 -mt-14'>
                         <h1 className='text-green text-xl font-bold '>{user && user.name || 'YOUR_NAME'}<span className='text-brown text-xs font-light'>{" "}{user.type}</span></h1>
@@ -136,7 +137,7 @@ function Dashboard() {
                     </div>
                 </div>
                 {/* Left Pannel */}
-                <div className='w-full min-h-full md:w-4/5 pb-5 pt-20 border-r-4'>
+                <div className='w-full min-h-full md:w-4/5 pb-5 pt-20'>
                     {/* Name and other buttons */}
                     <div className='flex flex-col gap-5 md:gap-0 mt-24 md:mt-0 justify-center items-center'>
                         <div className='mt-2 ml-1 md:ml-3 flex flex-col gap-2 justify-center items-center'>
@@ -213,7 +214,7 @@ function Dashboard() {
                                     <CarouselItem key={index}>
                                         <div className="p-1">
                                             <Card className="bg-dark h-fit text-white">
-                                                <CardContent className={`${errText ? 'hidden' : 'flex'} gap-5 items-center justify-start pt-4`}>
+                                                <CardContent className={`${errText ? 'flex' : 'hidden'} gap-5 items-center justify-start pt-4`}>
                                                     <div className='flex flex-col flex-wrap'>
                                                         <p className="text-base font-semibold">{index + 1} {dummyData[index]?.questionText}</p>
                                                         {dummyData[index].options?.map((option, index) => (
@@ -232,7 +233,7 @@ function Dashboard() {
                                                         <span className='font-normal'>{dummyData[index]?.explaintion}</span>
                                                     </div>
                                                 </CardContent>
-                                                <CardContent className={`justify-center items-center ${errText? 'flex' : 'hidden'}`}>
+                                                <CardContent className={`justify-center items-center ${errText? 'hidden' : 'flex'}`}>
                                                     <h1>NO QUESTIONS FOUND !!</h1>
                                                 </CardContent>
                                             </Card>
@@ -247,9 +248,10 @@ function Dashboard() {
                 </div>
 
                 {/* Right Pannel */}
-                <div className='h-full hidden md:flex flex-col gap-32 justify-between items-center w-1/5 py-6'>
-                    <div className='flex flex-col w-full h-full gap-10 items-center justify-between'>
-                        <UpdateProfilePage></UpdateProfilePage>
+                <div className='h-full hidden md:flex flex-col gap-28 border-l-4 justify-between items-center w-1/5 py-6'>
+                    <div className='flex flex-col w-full h-full gap-5 items-center justify-between'>
+                        <UpdateProfilePage />
+                        <ProfileForm />
                         <Button className={`bg-transparent ${btnDisplay}`} variant="outline">Delete Questions</Button>
                         <Button onClick={handleDeleteAccount} variant="destructive">Delete Account</Button>
                     </div>
@@ -270,7 +272,6 @@ function Dashboard() {
                 theme="dark"
                 transition:Bounce
             />
-
         </div>
     )
 }

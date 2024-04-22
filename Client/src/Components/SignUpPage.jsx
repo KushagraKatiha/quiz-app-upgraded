@@ -52,7 +52,8 @@ function SignUpPage() {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         try {
             // Validate the form data
             signUpSchema.parse(formData);
@@ -62,8 +63,8 @@ function SignUpPage() {
                 withCredentials: true
             })
             .then((response) => {
-                console.log("Hello response", response.data);
                 successTost(response.data.message);
+                console.log("Hello response", response.data);
                 if (response.data.success) {
                     setFormData({
                         name: '',

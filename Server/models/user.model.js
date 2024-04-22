@@ -31,10 +31,12 @@ const userSchema = new mongoose.Schema({
 
     profileImg:{
         type: String,   // cloudinary url
+        default: null
     },
 
     coverImg:{
         type: String,   // cloudinary url
+        default: null
     }, 
 
     forgetPasswordToken:{
@@ -60,9 +62,16 @@ userSchema.pre('save', async function(next){
     next()
 })
 
-userSchema.methods.checkPassword = async function(password){
-    return await bcrypt.compare(password, this.password)
+userSchema.methods.checkPassword = async function(password) {
+    try {
+        const isMatch = await bcrypt.compare(password, this.password);
+        return isMatch;
+    } catch (error) {
+        // Handle bcrypt comparison error
+        throw new Error('Error comparing passwords');
+    }
 }
+
 
 userSchema.methods.generateAccessToken = async function(){
     return JWT.sign({id: this._id}, process.env.JWT_SECRET, {expiresIn: '1d'})

@@ -1,4 +1,8 @@
 import nodemailer from 'nodemailer'
+import dotenv from 'dotenv'
+dotenv.config({
+    path: './.env'
+})
 
 const sendMail = async function(email, subject, content){
     let transporter = nodemailer.createTransport({
@@ -7,8 +11,8 @@ const sendMail = async function(email, subject, content){
         secure: false,
         auth: {
             user: process.env.EMAIL,
-            pass: process.env.PASSWORD
-        }   
+            pass: process.env.EMAIL_PASSWORD
+        }
     })
 
     await transporter.sendMail({

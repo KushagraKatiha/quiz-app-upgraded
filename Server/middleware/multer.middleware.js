@@ -1,20 +1,28 @@
-import multer from 'multer'
+import multer from 'multer';
+
+// Function to determine the destination directory based on field name
+const destination = (req, file, cb) => {
+    if (file.fieldname === 'profileImg') {
+        cb(null, 'public/temp/profileImages');
+    } else if (file.fieldname === 'coverImg') {
+        cb(null, 'public/temp/coverImages');
+    } else {
+        cb(new Error('Invalid field name'));
+    }
+};
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './public/temp')
-    }, 
+    destination: destination, // Use the dynamic destination function
     filename: (req, file, cb) => {
-        cb(null, Date.now() + file.originalname)
+        cb(null, req.user.name.split(" ").join('-') + Math.floor(Math.random()*10+1) + "." + file.mimetype.split('/')[1]);
     }
-})
+});
 
-const multer = multer({
+const upload = multer({
     storage: storage, 
     limits: {
         fileSize: 1024 * 1024 * 5
     },
-})
+});
 
-export default multer
-
+export default upload;

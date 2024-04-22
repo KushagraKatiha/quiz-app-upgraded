@@ -8,6 +8,7 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
+import ForgetPasswordPage from './ForgetPasswordPage'
 
 function LoginPage({
     display,
@@ -98,6 +99,7 @@ function LoginPage({
 
                     </div>
                     <Button className={`hover:bg-brown h-1/6 text-green`} variant="ghost" onClick={handleSignIn}>Sign In</Button>
+                    <ForgetPasswordPage />
                 </div>
             </div>
 

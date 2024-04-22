@@ -3,8 +3,10 @@ import ApiError from '../utils/ApiError.js'
 import emailValidator from 'email-validator'
 import ApiResponse from '../utils/ApiResponse.js'
 import asyncHandler from '../utils/asyncHandler.js'
-import uploadToCloudinary from '../utils/cloudinary.js'
+import {uploadToCloudinary, retryUpload } from '../utils/cloudinary.js'
 import sendMail from '../utils/sendEmail.js'
+import deleteFromCloudinary from '../utils/deleteFromCloudinary.js'
+import crypto from 'crypto'
 
 const register = asyncHandler(async (req, res, next) => {
     try {
@@ -12,7 +14,6 @@ const register = asyncHandler(async (req, res, next) => {
 
         if ([name, email, password, confirmPassword, type].some(field => field.trim() === '')) {
             throw new ApiError(400, "All fields are required !", false);
-            next();
         }
 
         if (!emailValidator.validate(email)) {
@@ -82,12 +83,11 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const getUser = asyncHandler(async (req, res) => {
+    const user = req.user;
     try {
-        const user = req.user;
         if (!user) {
             throw new ApiError(404, 'User not found', false);
         }
-    
         res.status(200).json(new ApiResponse(200, 'User found', true, user));
     } catch (error) {
         console.log("Error from getUser: ", error);
@@ -103,7 +103,6 @@ const logout = asyncHandler(async (req, res) => {
         }
         res.clearCookie('accessToken').json(new ApiResponse(200, 'Logout successful', true, null));
     } catch (error) {
-        console.log("Error from logout: ", error);
         res.status(500).json(error);
     }
 });
@@ -189,58 +188,97 @@ const updatePassword = asyncHandler(async (req, res) => {
         }
 
         const { currentPassword, newPassword, confirmPassword } = req.body;
-        if ([currentPassword, newPassword, confirmPassword].some(field => field.trim() === '')) {
+        if (!currentPassword || !newPassword || !confirmPassword) {
             throw new ApiError(400, 'All fields are required', false);
-        }
-
-        const isPasswordMatched = await user.checkPassword(currentPassword);
-
-        if (!isPasswordMatched) {
-            throw new ApiError(400, 'Invalid current password', false);
         }
 
         if (newPassword !== confirmPassword) {
             throw new ApiError(400, 'Passwords do not match', false);
         }
 
-        user.password = newPassword;
-        await user.save();
+        if (newPassword.length < 6) {
+            throw new ApiError(400, 'New password must be at least 6 characters long', false);
+        }
+        const userWithPassword = await User.findById(user._id).select('+password');
+        const isPasswordMatched = await userWithPassword.checkPassword(currentPassword);
+
+        if (!isPasswordMatched) {
+            throw new ApiError(400, 'Invalid current password', false);
+        }
+
+        userWithPassword.password = newPassword;
+        
+        await userWithPassword.save();
 
         res.status(200).json(new ApiResponse(200, 'Password updated successfully', true, null));
     } catch (error) {
-        console.log(error);
-        res.status(500).json(error);
+        console.error('Error updating password:', error.message);
+        res.status(error.statusCode || 500).json({ message: error.message });
     }
 });
 
 const uploadImage = asyncHandler(async (req, res) => {
     try {
-        // Check if user is logged In 
+        // Check if user is logged in 
         const user = req.user;
         if (!user) {
             throw new ApiError(404, 'User not found', false);
         }
 
-        // Check if the file is uploaded
-        if (!req.file) {
-            throw new ApiError(400, 'Please upload a file', false);
+        // Check if at least one file is uploaded
+        if (!req.files || (!req.files['profileImg'] && !req.files['coverImg'])) {
+            throw new ApiError(400, 'Please upload at least one image (profile or cover)', false);
         }
 
-        const profileImgPath = req.files?.profileImage[0]?.path;
-        const coverImgPath = req.files?.coverImage[0]?.path;
-        // upload the file to the cloudinary 
+        console.log("Files: ", req.files);
 
-        const profileImg = await uploadToCloudinary(profileImgPath);
-        const coverImg = await uploadToCloudinary(coverImgPath);
+        let profileImgPath, coverImgPath;
+        // Check if profile image is uploaded
+        if (req.files['profileImg']) {
+            profileImgPath = req.files['profileImg'][0].path;
+            console.log("Profile image path: ", profileImgPath);
+        }
+        // Check if cover image is uploaded
+        if (req.files['coverImg']) {
+            coverImgPath = req.files['coverImg'][0].path;
+            console.log("Cover image path: ", coverImgPath);
+        }
 
-        user.profileImage = profileImg?.url || user.profileImage;
-        user.coverImage = coverImg?.url || user.coverImage;
+        // Upload the files to Cloudinary if they exist, with retry logic
+        let profileImg, coverImg;
+        if (profileImgPath) {
+            // Delete the existing profile image from Cloudinary
+            if (user.profileImage) {
+                await deleteFromCloudinary(user.profileImage);
+            }
+            profileImg = await retryUpload(profileImgPath);
+            console.log("Profile image upload result: ", profileImg?.secure_url);
+        }
+        if (coverImgPath) {
+            // Delete the existing cover image from Cloudinary
+            if (user.coverImage) {
+                await deleteFromCloudinary(user.coverImage);
+            }
+            coverImg = await retryUpload(coverImgPath);
+            console.log("Cover image upload result: ", coverImg?.secure_url);
+        }
 
-        await user.save();
+        // Update the user's profile and cover image URLs
+        const updatedUser = await User.findByIdAndUpdate(
+            user._id,
+            { $set: {
+                profileImg: profileImg ? profileImg.url : user.profileImg || null,
+                coverImg: coverImg ? coverImg.url : user.coverImg || null
+            }},
+            { new: true }
+        ).select('-password');
+        
+        console.log("Updated user: ", updatedUser);
 
-        res.status(200).json(new ApiResponse(200, 'Image uploaded successfully', true, { profileImage: user.profileImage, coverImage: user.coverImage }));
+        // Send success response with updated image URLs
+        res.status(200).json(new ApiResponse(200, 'Images uploaded successfully', true, { profileImage: updatedUser.profileImg, coverImage: updatedUser.coverImg }));
     } catch (error) {
-        console.log(error);
+        console.log("Error uploading images: ", error);
         res.status(500).json(error);
     }
 });
@@ -252,10 +290,12 @@ const forgetPassword = asyncHandler(async (req, res) => {
             throw new ApiError(400, 'Email is required', false);
         }
 
-        const user = await User.find({ email });
+        const user = await User.findOne({ email });
         if (!user) {
             throw new ApiError(404, 'User not found', false);
         }
+
+        console.log(user);
 
         const forgetPasswordToken = await user.generateForgetPasswordToken();
 
@@ -264,7 +304,6 @@ const forgetPassword = asyncHandler(async (req, res) => {
         const resetPasswordLink = `http://localhost:${process.env.PORT}/user/reset-password/${forgetPasswordToken}`;
         const content = `Click on the link below to reset your password\n${resetPasswordLink}`;
         await sendMail(email, 'Reset Password', content);
-
         res.status(200).json(new ApiResponse(200, 'Forget password email sent successfully', true, null));
     } catch (error) {
         console.log(error);
@@ -276,6 +315,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     try {
         const { forgetPasswordToken } = req.params;
         const { newPassword, confirmPassword } = req.body;
+        console.log(forgetPasswordToken, newPassword, confirmPassword);
         if ([forgetPasswordToken, newPassword, confirmPassword].some(field => field.trim() === '')) {
             throw new ApiError(400, 'All fields are required', false);
         }
@@ -284,7 +324,8 @@ const resetPassword = asyncHandler(async (req, res) => {
             throw new ApiError(400, 'Passwords do not match', false);
         }
 
-        const user = await User.find({ forgetPasswordToken }, { forgetPasswordTokenExpiry: { $gt: Date.now() } });
+        const forgetToken = crypto.createHash('sha256').update(forgetPasswordToken).digest('hex');
+        const user = await User.findOne({ forgetPasswordToken: forgetToken ,  forgetPasswordTokenExpiry: { $gt: Date.now() } } ).select('+password');
         if (!user) {
             throw new ApiError(404, 'User not found', false);
         }
@@ -312,5 +353,5 @@ export {
     updatePassword,
     uploadImage,
     forgetPassword, 
-    resetPassword
+    resetPassword,
 };

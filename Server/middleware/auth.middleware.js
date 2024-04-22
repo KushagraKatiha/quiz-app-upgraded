@@ -3,10 +3,8 @@ import User from '../models/user.model.js'
 import ApiError from '../utils/ApiError.js'
 
 const jwtAuth = async (req, res, next) => {
-    console.log("req: ", req.cookies);
     try {
         const accessToken = req.cookies?.accessToken;
-        console.log("accessToken: ", accessToken);
         if (!accessToken) {
             throw new ApiError(401, 'Token not found !!', false);
         }
