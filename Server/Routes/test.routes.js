@@ -14,6 +14,6 @@ testRouter.post('/create', jwtAuth, createQuestions)
 testRouter.get('/teacher/get', jwtAuth, getAllQuestionsAsATeacher)
 testRouter.get('/student/get', jwtAuth, getQuestionsAsAStudent)
 testRouter.delete('/delete', jwtAuth, deleteQuestionsofASubject)
-testRouter.delete('/deleteAll', jwtAuth, deleteAllQuestions)
+testRouter.delete('/delete-all', jwtAuth, deleteAllQuestions)
 
 export default testRouter

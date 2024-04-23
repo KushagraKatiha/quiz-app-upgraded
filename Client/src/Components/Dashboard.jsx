@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import Autoplay from "embla-carousel-autoplay"
 import UpdateProfilePage from './UpdateProfilePage';
 import ProfileForm from './UpdatePasswordPage';
+import AddQuestionPage from './TeacherComponents/AddQuestionsPage';
 
 import {
     Carousel,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/carousel"
 
 import { Button } from '@/components/ui/button'
+import DeleteQuestionPage from './TeacherComponents/DeleteQuestions';
 
 function Dashboard() {
     const [greet, setGreet] = useState('')
@@ -27,32 +29,8 @@ function Dashboard() {
     const [questions, setQuestions] = useState([])
     const [errText, setErrText] = useState('false')
 
-    const dummyData = [
-        {
-            questionText: 'What is the capital of India? Which is the capital of India? How many states are there in India? ',
-            options: ['Delhi', 'Mumbai', 'Chennai', 'Kolkata'],
-            correctOption: 'Delhi',
-            explaintion: 'Delhi is the capital of India.'
-        },
-        {
-            questionText: 'What is the capital of USA?',
-            options: ['New York', 'Washington DC', 'California', 'Texas'],
-            correctOption: 'Washington DC',
-            explaintion: 'Washington DC is the capital of USA.'
-        },
-        {
-            questionText: 'What is the capital of UK?',
-            options: ['London', 'Manchester', 'Birmingham', 'Liverpool'],
-            correctOption: 'London',
-            explaintion: 'London is the capital of UK.'
-        },
-        {
-            questionText: 'What is the capital of France?',
-            options: ['Paris', 'Marseille', 'Lyon', 'Toulouse'],
-            correctOption: 'Paris',
-            explaintion: 'Paris is the capital of France.'
-        },
-    ]
+    const dummyData = questions.slice(0, 5)
+    console.log(dummyData);
 
     const errorTost = (message) => toast.error(message);
     const successTost = (message) => toast.success(message);
@@ -72,7 +50,7 @@ function Dashboard() {
             .then((response) => {
                 setUser(response.data.data)
                 if (response.data.data.type === 'teacher') {
-                    setBtnDisplay(!btnDisplay)
+                    setBtnDisplay(true)
                     axios.get('/api/test/teacher/get')
                         .then((response) => {
                             console.log(response.data.data);
@@ -87,7 +65,7 @@ function Dashboard() {
                         })
                 } else {
                     setCarouselDisplay(!carouselDisplay)
-
+                    setBtnDisplay(false)
                 }
             })
             .catch((error) => {
@@ -147,8 +125,8 @@ function Dashboard() {
 
                         {/* Buttons and Drawer Option */}
                         <div className='mt-5 ml-1 flex flex-col md:flex-row gap-8 md:gap-5'>
-                            <Button className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${btnDisplay ? 'hidden' : 'visible'}`} variant="outline">Set Exams</Button>
-                            <Button className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${!btnDisplay ? 'hidden' : 'visible'}`} variant="outline">Attempt Exams</Button>
+                            <AddQuestionPage className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${btnDisplay ? 'visible' : 'hidden'}`}/>
+                            <Button className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${!btnDisplay ? 'visible' : 'hidden'}`} variant="outline">Attempt Exams</Button>
                             <Button className={`bg-brown md:hover:bg-white h-1/6 text-white font-bold border-black`} variant="outline">View Results</Button>
                             {/* Drawer for mobile device only*/}
                             <div className='md:hidden flex justify-center items-center'>
@@ -229,8 +207,8 @@ function Dashboard() {
                                                     </div>
 
                                                     <div className='flex flex-col'>
-                                                        <p className='text-green font-bold'>Explaintion: </p>
-                                                        <span className='font-normal'>{dummyData[index]?.explaintion}</span>
+                                                        <p className='text-green font-bold'>Explanation: </p>
+                                                        <span className='font-normal'>{dummyData[index]?.explanation}</span>
                                                     </div>
                                                 </CardContent>
                                                 <CardContent className={`justify-center items-center ${errText? 'hidden' : 'flex'}`}>
@@ -252,7 +230,7 @@ function Dashboard() {
                     <div className='flex flex-col w-full h-full gap-5 items-center justify-between'>
                         <UpdateProfilePage />
                         <ProfileForm />
-                        <Button className={`bg-transparent ${btnDisplay}`} variant="outline">Delete Questions</Button>
+                        <DeleteQuestionPage className={`bg-transparent ${btnDisplay ? 'visible' : 'hidden'}`} variant="outline" />
                         <Button onClick={handleDeleteAccount} variant="destructive">Delete Account</Button>
                     </div>
 

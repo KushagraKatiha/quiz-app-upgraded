@@ -22,9 +22,7 @@ function SignUpPage() {
     const [visibility, setVisiblity] = useState(false);
 
     const toogleVisibility = () => {
-        console.log(`Visiblity before: ${visibility}`);
         setVisiblity(!visibility);
-        console.log(`Visiblity after: ${visibility}`);
     }
 
     const [formData, setFormData] = useState({
@@ -43,12 +41,10 @@ function SignUpPage() {
         if (e == 'student' || e == 'teacher') {
             setFormData({ ...formData, type: e });
             setErrors({ ...errors, type: '' });
-            console.log("errors", errors);
         } else {
             const { name, value } = e.target;
             setFormData({ ...formData, [name]: value });
             setErrors({ ...errors, [name]: '' });
-            console.log("errors", errors);
         }
     };
 
@@ -64,7 +60,6 @@ function SignUpPage() {
             })
             .then((response) => {
                 successTost(response.data.message);
-                console.log("Hello response", response.data);
                 if (response.data.success) {
                     setFormData({
                         name: '',

@@ -17,16 +17,28 @@ const createQuestions = asyncHandler(async (req, res) => {
 
         const { questionText, options, correctOption, explanation, subject } = req.body
 
-        if ([questionText, options, correctOption, explanation, subject].some(field => field.trim() === '')) {
+        console.log(questionText, options, correctOption, explanation, subject);
+
+        if (!questionText || !options || !correctOption || !explanation || !subject) {
             throw new ApiError(400, 'All fields are required', false)
         }
 
-        if (options.length !== 4) {
-            throw new ApiError(400, 'There must be exactly 4 options', false)
+        if(!['General Knowledge', 'English', 'Social Science', 'Science'].includes(subject)) {
+            throw new ApiError(400, 'Subject must be one of General Knowledge, English, Social Science, Science', false)
         }
 
-        if (!options.every(option => option.trim() !== '')) {
+        // check if no option is empty 
+        if (options.some(option => !option || option.trim() === '')) {
             throw new ApiError(400, 'All options are required', false)
+        }
+
+        // check if all options are unique
+        if (new Set(options).size !== options.length) {
+            throw new ApiError(400, 'All options must be unique', false)
+        }
+        
+        if (options.length !== 4) {
+            throw new ApiError(400, 'There must be exactly 4 options', false)
         }
 
         if (correctOption < 0 || correctOption > 4) {
@@ -125,16 +137,11 @@ const deleteQuestionsofASubject = asyncHandler(async (req, res) => {
         }
 
         const { subject } = req.body
+        console.log("Subject: ", subject);
+        const questions = await Question.deleteMany({ subject, teacher: req.user._id }, {new: true})
+        console.log("Questions: ", questions);
 
-        const questions = await Question.find({ subject, teacher: req.user._id }).select('-correctOption -explanation')
-
-        if (!questions || questions.length === 0) {
-            throw new ApiError(404, 'Question not found', false)
-        }
-
-        await Promise.all(questions.map(q => q.remove()))
-
-        res.status(200).json(new ApiResponse(200, 'Question deleted successfully', true))
+        res.status(200).json(new ApiResponse(200, 'Question deleted successfully', true, questions))
     } catch (error) {
         res.status(error.statusCode || 500).json(new ApiResponse(error.statusCode || 500, error.message, false));
     }
@@ -152,15 +159,10 @@ const deleteAllQuestions = asyncHandler(async (req, res) => {
             throw new ApiError(403, 'Forbidden', false)
         }
 
-        const questions = await Question.find({ teacher: req.user._id }).select('-correctOption -explanation')
-
-        if (!questions || questions.length === 0) {
-            throw new ApiError(404, 'Question not found', false)
-        }
-
-        await Promise.all(questions.map(q => q.remove()))
-
-        res.status(200).json(new ApiResponse(200, 'All questions deleted successfully', true))
+        const questions = await Question.deleteMany({ teacher: req.user._id })
+        console.log("Questions: ", questions);
+        
+        res.status(200).json(new ApiResponse(200, 'All questions deleted successfully', true, questions))
     } catch (error) {
         res.status(error.statusCode || 500).json(new ApiResponse(error.statusCode || 500, error.message, false));
     }
