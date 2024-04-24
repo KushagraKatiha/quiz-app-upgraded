@@ -20,6 +20,8 @@ import {
 
 import { Button } from '@/components/ui/button'
 import DeleteQuestionPage from './TeacherComponents/DeleteQuestions';
+import AttemptQuizPage from './StudentComponents/AttemptQuizPage';
+import SelectSubjectAndTeacher from './StudentComponents/SelectSubjectAndTeacher';
 
 function Dashboard() {
     const [greet, setGreet] = useState('')
@@ -126,7 +128,7 @@ function Dashboard() {
                         {/* Buttons and Drawer Option */}
                         <div className='mt-5 ml-1 flex flex-col md:flex-row gap-8 md:gap-5'>
                             <AddQuestionPage className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${btnDisplay ? 'visible' : 'hidden'}`}/>
-                            <Button className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${!btnDisplay ? 'visible' : 'hidden'}`} variant="outline">Attempt Exams</Button>
+                            <SelectSubjectAndTeacher className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${!btnDisplay ? 'visible' : 'hidden'}`} variant="outline" />
                             <Button className={`bg-brown md:hover:bg-white h-1/6 text-white font-bold border-black`} variant="outline">View Results</Button>
                             {/* Drawer for mobile device only*/}
                             <div className='md:hidden flex justify-center items-center'>

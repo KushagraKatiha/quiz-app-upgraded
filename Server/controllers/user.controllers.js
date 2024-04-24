@@ -343,6 +343,30 @@ const resetPassword = asyncHandler(async (req, res) => {
     }
 });
 
+const getUniqueTeacherNames = asyncHandler(async (req, res) => {
+    try {
+      // Aggregate pipeline stages
+      const pipeline = [
+        // Match documents where type is "teacher"
+        { $match: { type: 'teacher' } },
+        // Group documents by name and compute unique names
+        { $group: { _id: '$name' } },
+        // Project the _id field to name
+        { $project: { _id: 0, name: '$_id' } }
+      ];
+  
+      // Execute the aggregation pipeline
+      const teacherNames = await User.aggregate(pipeline);
+  
+      // Respond with the unique teacher names
+      res.json({ teacherNames });
+    } catch (error) {
+      // Handle errors
+      console.error('Error fetching unique teacher names:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
 export {
     register,
     login,

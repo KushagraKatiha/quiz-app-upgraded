@@ -5,14 +5,14 @@ import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import SignUpPage from './Components/SignUpPage.jsx'
 import Dashboard from './Components/Dashboard.jsx'
-import AddQuestionPage from './Components/TeacherComponents/AddQuestionsPage.jsx'
+import AttemptQuizPage from './Components/StudentComponents/AttemptQuizPage.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/" element={<SignUpPage />} />
       <Route path='/dashboard' element={<Dashboard/>} />
-      <Route path='/addQuestion' element={<AddQuestionPage />} />
+      <Route path='/take-test' element={<AttemptQuizPage/>} />
     </Route>
   )
 )
