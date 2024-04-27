@@ -104,7 +104,6 @@ function QuestionFrom({ className, open, setOpen }) {
       // Validate the form data against the schema
       // Assuming you have a questionSchema defined
       questionSchema.parse(formData);
-      console.log(formData, subjectValue);
       // If validation succeeds, hit the API endpoint
       const response = await axios.post('/api/test/create', {...formData, subject: subjectValue}, {
         withCredentials: true,
@@ -154,7 +153,6 @@ function QuestionFrom({ className, open, setOpen }) {
           name="subject"
           className="bg-dark text-white"
         />
-        <p className="text-left text-white text-xs">Choose subject from <b>General Knowledge, English, Social Science, Science</b> only.</p>
         {errors.subject && <div className="text-red">{errors.subject}</div>}
       </div>
       <div className="grid gap-2">

@@ -23,7 +23,6 @@ const deleteFromCloudinary = async (imageURL) => {
         
         return result;
     } catch (error) {
-        console.log("Error deleting image from Cloudinary:", error);
         return null;
     }
 };

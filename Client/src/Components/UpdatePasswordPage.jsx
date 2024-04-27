@@ -82,16 +82,13 @@ function PasswordFrom({ className }) {
 // Handle name and email changes
   const handleCurrentPasswordChange = (e) => {
     setCurrentPassword(e.target.value);
-    console.log(currentPassword);
   }
   const handleNewPasswordChange = (e) => {
     setNewPassword(e.target.value);
-    console.log(newPassword);
   }
 
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
-    console.log(confirmPassword);
   }
 
   const handlePasswordChange = (e) => {
@@ -108,8 +105,6 @@ function PasswordFrom({ className }) {
         withCredentials: true
       })
         .then((response) => {
-          console.log(response);
-          console.log("HEllo response", response.data);
           successTost(response.data.message);
         })
         .catch((error) => {

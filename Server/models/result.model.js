@@ -19,6 +19,11 @@ const resultSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+
+    teacherName:{
+        type: String,
+        required: true
     }
 }, {timestamps: true})
 

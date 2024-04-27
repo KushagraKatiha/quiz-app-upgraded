@@ -58,13 +58,11 @@ const retryUpload = async (localFilePath, maxRetries = 3, delayMs = 1000) => {
                 return uploadResult;
             }
         } catch (error) {
-            console.log(`Upload attempt ${retries + 1} failed:`, error);
         }
         retries++;
         // Delay before retrying
         await new Promise(resolve => setTimeout(resolve, delayMs));
     }
-    console.log(`Upload failed after ${maxRetries} attempts.`);
     return null;
 }
 

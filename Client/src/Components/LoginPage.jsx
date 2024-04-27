@@ -9,6 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 import ForgetPasswordPage from './ForgetPasswordPage'
+import { useNavigate } from 'react-router-dom'
 
 function LoginPage({
     display,
@@ -20,6 +21,7 @@ function LoginPage({
         password: ''
     });
     const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
 
     const errorTost = (message) => toast.error(message);
     const successTost = (message) => toast.success(message);
@@ -28,7 +30,6 @@ function LoginPage({
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
         setErrors({ ...errors, [name]: '' });
-        console.log("errors", errors);
     };
 
     const handleSignIn = () => {
@@ -37,18 +38,14 @@ function LoginPage({
             signInSchema.parse(formData);
             // If validation succeeds, hit the API endpoint
             // and set the error messages to the response
-            console.log(formData);
-            console.log("Errors", errors);
             axios.post('/api/user/login', formData, {
                 withCredentials: true
             })
                 .then((response) => {
-                    console.log(response);
-                    console.log("HEllo response", response.data);
+                    navigate('/dashboard');
                     successTost(response.data.message);
                 })
                 .catch((error) => {
-                    console.log("Error", error.response);
                     errorTost(error.response.data.message);
                     setErrors(error.response.data.errors);
                 });

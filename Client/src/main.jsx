@@ -6,6 +6,8 @@ import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } 
 import SignUpPage from './Components/SignUpPage.jsx'
 import Dashboard from './Components/Dashboard.jsx'
 import AttemptQuizPage from './Components/StudentComponents/AttemptQuizPage.jsx'
+import QuizPage from './Components/StudentComponents/QuizPage.jsx'
+import ResultPage from './Components/ResultPage.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -13,6 +15,8 @@ const router = createBrowserRouter(
       <Route path="/" element={<SignUpPage />} />
       <Route path='/dashboard' element={<Dashboard/>} />
       <Route path='/take-test' element={<AttemptQuizPage/>} />
+      <Route path='/take-test/:subject/:teacherName' element={<QuizPage />} />
+      <Route path='/get-result' element={<ResultPage />} />
     </Route>
   )
 )

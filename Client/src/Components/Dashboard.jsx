@@ -9,7 +9,7 @@ import Autoplay from "embla-carousel-autoplay"
 import UpdateProfilePage from './UpdateProfilePage';
 import ProfileForm from './UpdatePasswordPage';
 import AddQuestionPage from './TeacherComponents/AddQuestionsPage';
-
+import { useNavigate } from 'react-router-dom';
 import {
     Carousel,
     CarouselContent,
@@ -20,7 +20,6 @@ import {
 
 import { Button } from '@/components/ui/button'
 import DeleteQuestionPage from './TeacherComponents/DeleteQuestions';
-import AttemptQuizPage from './StudentComponents/AttemptQuizPage';
 import SelectSubjectAndTeacher from './StudentComponents/SelectSubjectAndTeacher';
 
 function Dashboard() {
@@ -30,9 +29,9 @@ function Dashboard() {
     const [carouselDisplay, setCarouselDisplay] = useState('true')
     const [questions, setQuestions] = useState([])
     const [errText, setErrText] = useState('false')
+    const navigate = useNavigate();
 
     const dummyData = questions.slice(0, 5)
-    console.log(dummyData);
 
     const errorTost = (message) => toast.error(message);
     const successTost = (message) => toast.success(message);
@@ -55,13 +54,11 @@ function Dashboard() {
                     setBtnDisplay(true)
                     axios.get('/api/test/teacher/get')
                         .then((response) => {
-                            console.log(response.data.data);
                             if (!response.data.data) {
                                 setQuestions(["NO QUESTIONS AVAILABLE"])
                             }
                             setQuestions(response.data.data)
                         }).catch((error) => {
-                            console.log("Error from questions api: ", error.response.data.message)
                             setErrText(!errText)
                             setQuestions(["NO QUESTIONS AVAILABLE"])
                         })
@@ -71,18 +68,19 @@ function Dashboard() {
                 }
             })
             .catch((error) => {
-                console.log(error)
+                errorTost("Failed to fetch user data, Please try again later.")
             })
-
-
     }, [])
+
+    const handleViewResults = () => {
+        navigate('/get-result')
+    }
 
     const handleDeleteAccount = () => {
         axios.delete('/api/user/delete')
             .then((response) => {
-                console.log(response)
+                navigate('/')
             }).catch((error) => {
-                console.log(error)
                 errorTost(error.response.data.message)
             })
     }
@@ -90,12 +88,13 @@ function Dashboard() {
     const handleSignOut = () => {
         axios.get('/api/user/logout')
             .then((response) => {
-                console.log(response)
+                navigate('/')
             }).catch((error) => {
-                console.log(error)
                 errorTost(error.response.data.message)
             })
     }
+
+
 
     return (
         <div style={{ minHeight: '100vh' }} className='h-full bg-black text-white'>
@@ -129,7 +128,7 @@ function Dashboard() {
                         <div className='mt-5 ml-1 flex flex-col md:flex-row gap-8 md:gap-5'>
                             <AddQuestionPage className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${btnDisplay ? 'visible' : 'hidden'}`}/>
                             <SelectSubjectAndTeacher className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${!btnDisplay ? 'visible' : 'hidden'}`} variant="outline" />
-                            <Button className={`bg-brown md:hover:bg-white h-1/6 text-white font-bold border-black`} variant="outline">View Results</Button>
+                            <Button className={`bg-brown md:hover:bg-white h-1/6 text-white font-bold border-black`} variant="outline" onClick={handleViewResults}>View Results</Button>
                             {/* Drawer for mobile device only*/}
                             <div className='md:hidden flex justify-center items-center'>
                                 <Drawer.Root direction="right">

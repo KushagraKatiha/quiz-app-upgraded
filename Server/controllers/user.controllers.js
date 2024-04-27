@@ -44,7 +44,6 @@ const register = asyncHandler(async (req, res, next) => {
 
         res.status(201).json(new ApiResponse(201, "User created successfully !", true, userToBeSent));
     } catch (error) {
-        console.log(error);
         res.status(500).json(error);
     }
 });
@@ -77,7 +76,6 @@ const login = asyncHandler(async (req, res) => {
 
         res.status(200).cookie('accessToken', accessToken, cookieOptions).json(new ApiResponse(200, 'Login successful', true, userToBeSent));
     } catch (error) {
-        console.log(error);
         res.status(500).json(error);
     }
 });
@@ -90,7 +88,6 @@ const getUser = asyncHandler(async (req, res) => {
         }
         res.status(200).json(new ApiResponse(200, 'User found', true, user));
     } catch (error) {
-        console.log("Error from getUser: ", error);
         res.status(500).json(error);
     }
 });
@@ -122,7 +119,6 @@ const deleted = asyncHandler(async (req, res) => {
 
         res.status(200).json(new ApiResponse(200, 'User deleted successfully', true, { name: deletedUser.name, email: deletedUser.email }));
     } catch (error) {
-        console.log(error);
         res.status(500).json(error);
     }
 });
@@ -175,7 +171,6 @@ const update = asyncHandler(async (req, res) => {
             res.status(200).json(new ApiResponse(200, 'User updated successfully', true, { name: user.name, email: user.email }));
         }
     } catch (error) {
-        console.log(error);
         res.status(500).json(error);
     }
 });
@@ -230,18 +225,14 @@ const uploadImage = asyncHandler(async (req, res) => {
             throw new ApiError(400, 'Please upload at least one image (profile or cover)', false);
         }
 
-        console.log("Files: ", req.files);
-
         let profileImgPath, coverImgPath;
         // Check if profile image is uploaded
         if (req.files['profileImg']) {
             profileImgPath = req.files['profileImg'][0].path;
-            console.log("Profile image path: ", profileImgPath);
         }
         // Check if cover image is uploaded
         if (req.files['coverImg']) {
             coverImgPath = req.files['coverImg'][0].path;
-            console.log("Cover image path: ", coverImgPath);
         }
 
         // Upload the files to Cloudinary if they exist, with retry logic
@@ -252,7 +243,6 @@ const uploadImage = asyncHandler(async (req, res) => {
                 await deleteFromCloudinary(user.profileImage);
             }
             profileImg = await retryUpload(profileImgPath);
-            console.log("Profile image upload result: ", profileImg?.secure_url);
         }
         if (coverImgPath) {
             // Delete the existing cover image from Cloudinary
@@ -260,7 +250,6 @@ const uploadImage = asyncHandler(async (req, res) => {
                 await deleteFromCloudinary(user.coverImage);
             }
             coverImg = await retryUpload(coverImgPath);
-            console.log("Cover image upload result: ", coverImg?.secure_url);
         }
 
         // Update the user's profile and cover image URLs
@@ -272,13 +261,10 @@ const uploadImage = asyncHandler(async (req, res) => {
             }},
             { new: true }
         ).select('-password');
-        
-        console.log("Updated user: ", updatedUser);
 
         // Send success response with updated image URLs
         res.status(200).json(new ApiResponse(200, 'Images uploaded successfully', true, { profileImage: updatedUser.profileImg, coverImage: updatedUser.coverImg }));
     } catch (error) {
-        console.log("Error uploading images: ", error);
         res.status(500).json(error);
     }
 });
@@ -295,8 +281,6 @@ const forgetPassword = asyncHandler(async (req, res) => {
             throw new ApiError(404, 'User not found', false);
         }
 
-        console.log(user);
-
         const forgetPasswordToken = await user.generateForgetPasswordToken();
 
         await user.save();
@@ -306,7 +290,6 @@ const forgetPassword = asyncHandler(async (req, res) => {
         await sendMail(email, 'Reset Password', content);
         res.status(200).json(new ApiResponse(200, 'Forget password email sent successfully', true, null));
     } catch (error) {
-        console.log(error);
         res.status(500).json(error);
     }
 });
@@ -315,7 +298,6 @@ const resetPassword = asyncHandler(async (req, res) => {
     try {
         const { forgetPasswordToken } = req.params;
         const { newPassword, confirmPassword } = req.body;
-        console.log(forgetPasswordToken, newPassword, confirmPassword);
         if ([forgetPasswordToken, newPassword, confirmPassword].some(field => field.trim() === '')) {
             throw new ApiError(400, 'All fields are required', false);
         }
@@ -338,7 +320,6 @@ const resetPassword = asyncHandler(async (req, res) => {
 
         res.status(200).json(new ApiResponse(200, 'Password reset successfully', true, null));
     } catch (error) {
-        console.log(error);
         res.status(500).json(error);
     }
 });

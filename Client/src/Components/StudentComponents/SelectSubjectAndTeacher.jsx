@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { cn } from "@/lib/utils";
-import { questionSchema } from "@/Schemas/questionSchema.js";
+import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@custom-react-hooks/all';
 import { Button } from "@/components/ui/button";
 import { ToastContainer, toast } from 'react-toastify';
@@ -36,7 +36,7 @@ function SelectSubjectAndTeacher({ className }) {
       {isDesktop ? (
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" className = {className} >Search</Button>
+            <Button variant="outline" className = {className} >Attempt Test</Button>
           </DialogTrigger>
           <DialogContent className="md:w-screen bg-dark text-white">
             <DialogHeader>
@@ -48,7 +48,7 @@ function SelectSubjectAndTeacher({ className }) {
       ) : (
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
-            <Button variant="outline" className="bg-transparent">Search</Button>
+            <Button variant="outline" className="bg-transparent">Attempt Test</Button>
           </DrawerTrigger>
           <DrawerContent>
             <DrawerHeader className="text-left">
@@ -70,34 +70,75 @@ function SelectSubjectAndTeacher({ className }) {
 function QuestionFrom({ className, open, setOpen }) {
   const [subjectValue, setSubjectValue] = useState('');
   const [teacherName, setTeacherName] = useState('');
+  const [subjects, setSubjects] = useState()
+  const [teachers, setTeachers] = useState()
+  const navigate = useNavigate();
+  useEffect(()=>{
+    try {
+      axios.get('/api/test/all-subjects')
+      .then((response)=>{
+        setSubjects(response.data.data);
+      })
+      .catch((error)=>{
+      })
+    } catch (error) {
+    }
 
-  const errorToast = (message) => toast.error(message);
-  const successToast = (message) => toast.success(message);
+    try{
+      axios.get('/api/test/all-teachers')
+      .then((response)=>{
+        setTeachers(response.data.data);
+      })
+      .catch((error)=>{
+      })
+    }catch(error){
+    }
+  }, [])
+
+  const handleGo = (e) => {
+    e.preventDefault();
+    if(subjectValue === '-' || teacherName === '-'){
+      toast.error('Please select subject and teacher');
+    }else{
+      setOpen(false);
+      navigate(`/take-test/${subjectValue}/${teacherName}`);
+    }
+  }
 
   return (
-    <form className={cn("grid items-start gap-4", className)}>
+    <form className={cn("grid items-center grid-cols-2 gap-4", className)}>
       <div className={`w-fit`}>
         <Label htmlFor="subject">Subject</Label>
-        <Input
+        <select
           value={subjectValue}
           onChange={(e) => setSubjectValue(e.target.value)}
-          type="text"
-          id="subject"
-          name="subject"
-          className="bg-dark text-white"
-        />
+          className="bg-dark text-white ml-2"
+        >
+          <option value="-">select</option>
+          {
+            subjects && subjects.map((sub, idx) => {
+              return <option key={idx} value={sub}>{sub}</option>
+            })
+          }
+        </select> 
       </div>
-      <div className="grid gap-2">
-        <Label htmlFor="questionText">Question Text</Label>
-        <Input
-          type="text"
-          id="questionText"
-          name="questionText"
-          className="bg-dark text-white"
-        />
+      <div className="w-fit">
+        <Label htmlFor="questionText">Teacher</Label>
+        <select
+          value={teacherName}
+          onChange={(e) => setTeacherName(e.target.value)}
+          className="bg-dark text-white ml-2"
+        >
+          <option value="-">select</option>
+          {
+            teachers && teachers.map((teacher, idx) => {
+              return <option key={idx} value={teacher}>{teacher}</option>
+            })
+          }
+        </select> 
       </div>
       <div className="flex justify-between">
-        <Button type="submit" className="bg-blue hover:bg-black hover:text-white">Go</Button>
+        <Button type="submit" onClick={handleGo} className="bg-blue hover:bg-black hover:text-white">Go</Button>
       </div>
     </form>
   );

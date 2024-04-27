@@ -81,11 +81,9 @@ function DetailsForm({ className }) {
 // Handle name and email changes
   const handleNameChange = (e) => {
     setUserName(e.target.value);
-    console.log(email);
   }
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
-    console.log(userName);
   }
 
   const handleDetailsSubmit = async (e) => {
@@ -97,7 +95,6 @@ function DetailsForm({ className }) {
         email: email
       });
       successTost(response.data.message);
-      console.log(response.data);
     } catch (error) {
       errorTost(error.response.data.message || "An error occurred while updating the profile.");
       console.error(error);
@@ -110,7 +107,6 @@ function DetailsForm({ className }) {
     const newFormData = new FormData();
     newFormData.append(field, file);
     setFormData(newFormData);
-    console.log(newFormData);
   }
 
   const handleImageUpload = async () => {
@@ -122,7 +118,6 @@ function DetailsForm({ className }) {
         }
       });
       successTost(response.data.message);
-      console.log(response.data);
     } catch (error) {
       errorTost(error.response.data.message || "An error occurred while uploading the image(s).");
       console.error(error);

@@ -78,19 +78,15 @@ function QuestionFrom({ className, open, setOpen }) {
 
   const handleDeleteQuestion = async (e) => {
     e.preventDefault();
-    console.log("subjectValue: ", subjectValue);
     try {
-        console.log("subjectValue: ", subjectValue);
         await axios.delete('/api/test/delete', { data:{
             subject:subjectValue
         }
         }, {withCredentials: true})
         .then((response) => {
-            console.log(response.data);
             successToast((!response.data.deleteCount) ? '0 questions deleted successfully' : response.data.deleteCount + ' questions deleted successfully');
         })
         .catch((error) => {
-            console.log(error);
             errorToast(error.response.data.message);
         }
         );
@@ -107,11 +103,9 @@ function QuestionFrom({ className, open, setOpen }) {
             subjectValue: ''
         }, {withCredentials: true})
         .then((response) => {
-            console.log(response.data);
             successToast((!response.data.deleteCount) ? '0 questions deleted successfully' : response.data.deleteCount + ' questions deleted successfully');
         })
         .catch((error) => {
-            console.log(error);
             errorToast(error.response.data.message);
         }
         );
