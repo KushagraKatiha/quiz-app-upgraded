@@ -71,7 +71,7 @@ function SignUpPage() {
                 }
             })
             .catch((error) => {
-                console.error("Hello Error=>", error.response.data.message);
+                console.error("Hello Error=>", error);
                 if (error.response && error.response.data && error.response.data.message) {
                     errorTost(error.response.data.message);
                 } else {
