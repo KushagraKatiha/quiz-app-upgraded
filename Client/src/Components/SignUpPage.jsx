@@ -2,8 +2,8 @@ import React from 'react'
 import { z } from 'zod'
 import { useState } from 'react'
 import { signUpSchema } from '@/Schemas/signUpSchema'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/Components/ui/button"
+import { Input } from "@/Components/ui/input"
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,7 +15,7 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from "@/Components/ui/select"
 import LoginPage from './LoginPage'
 
 function SignUpPage() {

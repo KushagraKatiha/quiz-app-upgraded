@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Autoplay from "embla-carousel-autoplay"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/Components/ui/card"
+import { Button } from "@/Components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import {
     Carousel,
@@ -10,7 +10,7 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from "@/components/ui/carousel"
+} from "@/Components/ui/carousel"
 
 
 function ResultPage() {

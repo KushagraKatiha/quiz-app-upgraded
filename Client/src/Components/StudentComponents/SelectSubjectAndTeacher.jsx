@@ -3,7 +3,7 @@ import axios from "axios";
 import { cn } from "@/lib/utils";
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@custom-react-hooks/all';
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import z from 'zod';
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/Components/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -24,9 +24,9 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/Components/ui/drawer";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
 
 function SelectSubjectAndTeacher({ className }) {
   const [open, setOpen] = useState(false);

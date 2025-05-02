@@ -4,7 +4,7 @@ import { Drawer } from 'vaul';
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/Components/ui/card"
 import Autoplay from "embla-carousel-autoplay"
 import UpdateProfilePage from './UpdateProfilePage';
 import ProfileForm from './UpdatePasswordPage';
@@ -16,9 +16,9 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from "@/components/ui/carousel"
+} from "@/Components/ui/carousel"
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/Components/ui/button'
 import DeleteQuestionPage from './TeacherComponents/DeleteQuestions';
 import SelectSubjectAndTeacher from './StudentComponents/SelectSubjectAndTeacher';
 

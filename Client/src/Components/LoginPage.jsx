@@ -2,8 +2,8 @@ import React from 'react'
 import { z } from 'zod'
 import { useState } from 'react'
 import { signInSchema } from '@/Schemas/signInSchema'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/Components/ui/button"
+import { Input } from "@/Components/ui/input"
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 
