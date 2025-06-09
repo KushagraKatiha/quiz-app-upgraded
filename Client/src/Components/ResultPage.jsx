@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Autoplay from "embla-carousel-autoplay"
-import { Card, CardContent } from "@/Components/ui/card"
-import { Button } from "@/Components/ui/button";
+import { Card, CardContent } from "@/components/ui/card"    // change to @/Components
+import { Button } from "@/components/ui/button";    // change to @/Components
 import { useNavigate } from 'react-router-dom';
 import {
     Carousel,
@@ -10,7 +10,7 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from "@/Components/ui/carousel"
+} from "@/components/ui/carousel"   // change to @/Components
 
 
 function ResultPage() {
@@ -42,30 +42,35 @@ function ResultPage() {
                     }}
                     plugins={[
                         Autoplay({
-                            delay: 2000,
+                            delay: 10000,
                         }),
                     ]}
                     className="w-3/5"
                 >
-                    <CarouselContent className="h-fit">
-                        {results.map((result, index) => (
+                    <CarouselContent className="h-fit flex justify-center items-center">
+                        {results.length > 0 && results.map((result, index) => (
                             <CarouselItem key={index}>
                                 <div className="p-1">
                                     <Card className="bg-dark h-fit text-white">
-                                        <CardContent className={`flex gap-5 items-center justify-start pt-4`}>
-                                            <div key={index} className="result-item">
-                                                <p><strong>Student:</strong> {result.student.name}</p>
-                                                <p><strong>Subject:</strong> {result.subject}</p>
-                                                <p><strong>Teacher:</strong> {result.teacherName}</p>
-                                                <p><strong>Max Marks:</strong> {result.maxMarks}</p>
-                                                <p><strong>Obtained Marks:</strong> {result.obtMarks}</p>
-                                                <p><strong>Date:</strong> {new Date(result.createdAt).toLocaleString()}</p>
-                                            </div>
+                                        <CardContent className="flex flex-col gap-2 pt-4">
+                                            <p><strong>Student:</strong> {result.student?.name || "Unknown"}</p>
+                                            <p><strong>Subject:</strong> {result.subject}</p>
+                                            <p><strong>Teacher:</strong> {result.teacherName}</p>
+                                            <p><strong>Max Marks:</strong> {result.maxMarks}</p>
+                                            <p><strong>Obtained Marks:</strong> {result.obtMarks}</p>
+                                            <p><strong>Date:</strong> {new Date(result.createdAt).toLocaleString()}</p>
                                         </CardContent>
                                     </Card>
                                 </div>
                             </CarouselItem>
                         ))}
+
+                        {results.length <= 0 && (
+                            <h1 className='text-white text-center'>
+                                No Results Found For You !!
+                            </h1>
+                        )}
+
                     </CarouselContent>
                     <CarouselPrevious className="bg-transparent text-white" />
                     <CarouselNext className="bg-transparent text-white" />

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button } from '@/Components/ui/button';
-import { Input } from '@/Components/ui/input';
-import { Label } from '@/Components/ui/label';
+import { Button } from '@/components/ui/button'; // change to @/Components
+import { Input } from '@/components/ui/input'; // change to @/Components
+import { Label } from '@/components/ui/label'; // change to @/Components
 
 function AttemptQuizPage() {
   const [subject, setSubject] = useState('');

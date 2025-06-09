@@ -5,7 +5,9 @@ import {
     deleteQuestionsofASubject,
     deleteAllQuestions,
     getAllSubjects,
-    getAllTeachers
+    getAllTeachers,
+    getTeachersBySubject,
+    getSubjectsByTeacher
 } from '../controllers/test.controller.js'
 import jwtAuth from '../middleware/auth.middleware.js'
 import { Router } from 'express'
@@ -20,5 +22,8 @@ testRouter.delete('/delete-all', jwtAuth, deleteAllQuestions)
 testRouter.post('/attempt-quiz', jwtAuth, getQuestionsAsAStudent)
 testRouter.get('/all-subjects', getAllSubjects)
 testRouter.get('/all-teachers', getAllTeachers)
+testRouter.get('/subjects/teacher/:teacherId', getSubjectsByTeacher);
+testRouter.get('/teachers/subject/:subject', getTeachersBySubject);
+
 
 export default testRouter

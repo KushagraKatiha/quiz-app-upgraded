@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { cn } from "@/lib/utils";
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";    // change to @/Components
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Input } from "@/Components/ui/input";
-import { Label } from "@/Components/ui/label";
+import { Input } from "@/components/ui/input";  // change to @/Components
+import { Label } from "@/components/ui/label";  // change to @/Components
 import { useParams, useNavigate } from "react-router-dom";
 
 const errorTost = (message) => toast.error(message);

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from '@custom-react-hooks/all';
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";      // change to @/Components
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/Components/ui/dialog";
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -22,9 +22,9 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/Components/ui/drawer";
-import { Input } from "@/Components/ui/input";
-import { Label } from "@/Components/ui/label";
+} from "@/components/ui/drawer";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const errorTost = (message) => toast.error(message);
 const successTost = (message) => toast.success(message);

@@ -4,6 +4,41 @@ import ApiError from '../utils/ApiError.js'
 import ApiResponse from '../utils/ApiResponse.js'
 import asyncHandler from '../utils/asyncHandler.js'
 
+const getSubjectsByTeacher = asyncHandler(async (req, res) => {
+    try {
+        const { teacherId } = req.params;
+
+        const subjects = await Question.find({ teacher: teacherId }).distinct('subject');
+
+        if (!subjects.length) {
+            throw new ApiError(404, 'No subjects found for this teacher', false);
+        }
+
+        res.status(200).json(new ApiResponse(200, 'Subjects fetched successfully', true, subjects));
+    } catch (error) {
+        res.status(error.statusCode || 500).json(new ApiResponse(error.statusCode || 500, error.message, false));
+    }
+});
+
+const getTeachersBySubject = asyncHandler(async (req, res) => {
+    try {
+        const { subject } = req.params;
+
+        const teachers = await Question.find({ subject }).populate('teacher', 'name');
+
+        let teacherNames = teachers.map(item => item.teacher?.name).filter(Boolean);
+        teacherNames = [...new Set(teacherNames)];
+
+        if (!teacherNames.length) {
+            throw new ApiError(404, 'No teachers found for this subject', false);
+        }
+
+        res.status(200).json(new ApiResponse(200, 'Teachers fetched successfully', true, teacherNames));
+    } catch (error) {
+        res.status(error.statusCode || 500).json(new ApiResponse(error.statusCode || 500, error.message, false));
+    }
+});
+
 const getAllSubjects = asyncHandler(async (req, res) => {
     try {
         const subjects = await Question.find().distinct('subject')
@@ -66,8 +101,8 @@ const createQuestions = asyncHandler(async (req, res) => {
             throw new ApiError(400, 'There must be exactly 4 options', false)
         }
 
-        if (correctOption < 0 || correctOption > 4) {
-            throw new ApiError(400, 'Correct option must be between 0 and 4', false)
+        if (correctOption < 1 || correctOption > 4) {
+            throw new ApiError(400, 'Correct option must be between 1 and 4', false)
         }
 
         const question = await Question.create({
@@ -217,5 +252,7 @@ export {
     deleteQuestionsofASubject,
     deleteAllQuestions,
     getAllSubjects,
-    getAllTeachers
+    getAllTeachers, 
+    getSubjectsByTeacher, 
+    getTeachersBySubject
 }

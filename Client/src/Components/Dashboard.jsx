@@ -4,7 +4,7 @@ import { Drawer } from 'vaul';
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Card, CardContent } from "@/Components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import Autoplay from "embla-carousel-autoplay"
 import UpdateProfilePage from './UpdateProfilePage';
 import ProfileForm from './UpdatePasswordPage';
@@ -16,11 +16,12 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from "@/Components/ui/carousel"
+} from "@/components/ui/carousel"
 
-import { Button } from '@/Components/ui/button'
+import { Button } from '@/components/ui/button'
 import DeleteQuestionPage from './TeacherComponents/DeleteQuestions';
 import SelectSubjectAndTeacher from './StudentComponents/SelectSubjectAndTeacher';
+import { Input } from '@/components/ui/input';
 
 function Dashboard() {
     const [greet, setGreet] = useState('')
@@ -35,6 +36,28 @@ function Dashboard() {
 
     const errorTost = (message) => toast.error(message);
     const successTost = (message) => toast.success(message);
+
+    const [formData, setFormData] = useState(new FormData());
+    const handleImageChange = (e, field) => {
+        const file = e.target.files[0];
+        const newFormData = new FormData();
+        newFormData.append(field, file);
+        setFormData(newFormData);
+    }
+    const handleImageUpload = async () => {
+        try {
+            const response = await axios.put('/api/user/add-images', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            successTost(response.data.message);
+    
+        } catch (error) {
+            errorTost(error.response?.data?.message || "An error occurred while uploading the image.");
+        }
+    }
+    
 
     useEffect(() => {
         const date = new Date()
@@ -99,22 +122,47 @@ function Dashboard() {
     return (
         <div style={{ minHeight: '100vh' }} className='h-full bg-black text-white'>
             {/* Top Part */}
-            <div className='border-b-4 h-1/3 border-white overflow-hidden'>
+            <div className='h-1/3 overflow-hidden border-b-4 border-white'>
+
                 <img src={user?.coverImg || "https://images.pexels.com/photos/3560168/pexels-photo-3560168.jpeg?auto=compress&cs=tinysrgb&w=600"} alt="cover_image" className='h-32 w-full' />
+
+                <div className='min-w-44 absolute flex justify-center items-center min-h-44 top-16'>
+                    <div className='flex flex-col items-center justify-center gap-14'>
+                        {/* profile image container */}
+                        <div className='border-4 min-h-28 max-w-28 flex flex-col items-center justify-center bg-black p-1 overflow-hidden border-white rounded-full w-fit'>
+                            {user.profileImg ? (
+                                <img src={user?.profileImg} alt="profile_img" className="rounded-full h-24 w-24 object-cover" />
+                            ) : (
+                                <>
+                                    <Input
+                                        onChange={(e) => handleImageChange(e, "profileImg")}
+                                        type="file"
+                                        accept="image/*"
+                                        id="profileImg"
+                                        className="bg-blue text-white text-xs"
+                                    />
+                                    {formData.has("profileImg") && (
+                                        <Button
+                                            onClick={handleImageUpload}
+                                            className="mt-2 p-1 text-xs bg-green hover:bg-blue text-white"
+                                        >
+                                            Upload
+                                        </Button>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        <div className='ml-2 md:ml-3 -mt-14'>
+                            <h1 className='text-green text-xl font-bold '>{user && user.name || 'YOUR_NAME'}<span className='text-brown text-xs font-light'>{" "}{user.type}</span></h1>
+                            <p className='text-xs'>{user.email}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Hero Section */}
             <div className='flex items-center h-2/3'>
-                <div className='ml-2 absolute top-32'>
-                    {/* profile image container */}
-                    <div className='rounded-full border-4 overflow-hidden border-solid w-36 relative bottom-16'>
-                        <img src={user?.profileImg || "https://www.pngmart.com/files/23/Profile-PNG-Photo.png"} alt="profile_img" />
-                    </div>
-                    <div className='ml-2 md:ml-3 -mt-14'>
-                        <h1 className='text-green text-xl font-bold '>{user && user.name || 'YOUR_NAME'}<span className='text-brown text-xs font-light'>{" "}{user.type}</span></h1>
-                        <p className='text-xs'>{user.email}</p>
-                    </div>
-                </div>
                 {/* Left Pannel */}
                 <div className='w-full min-h-full md:w-4/5 pb-5 pt-20'>
                     {/* Name and other buttons */}
@@ -126,7 +174,7 @@ function Dashboard() {
 
                         {/* Buttons and Drawer Option */}
                         <div className='mt-5 ml-1 flex flex-col md:flex-row gap-8 md:gap-5'>
-                            <AddQuestionPage className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${btnDisplay ? 'visible' : 'hidden'}`}/>
+                            <AddQuestionPage className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${btnDisplay ? 'visible' : 'hidden'}`} />
                             <SelectSubjectAndTeacher className={`bg-green hover:bg-white md:hover:bg-blue h-1/6 text-white font-bold border-black ${!btnDisplay ? 'visible' : 'hidden'}`} variant="outline" />
                             <Button className={`bg-brown md:hover:bg-white h-1/6 text-white font-bold border-black`} variant="outline" onClick={handleViewResults}>View Results</Button>
                             {/* Drawer for mobile device only*/}
@@ -212,7 +260,7 @@ function Dashboard() {
                                                         <span className='font-normal'>{dummyData[index]?.explanation}</span>
                                                     </div>
                                                 </CardContent>
-                                                <CardContent className={`justify-center items-center ${errText? 'hidden' : 'flex'}`}>
+                                                <CardContent className={`justify-center items-center ${errText ? 'hidden' : 'flex'}`}>
                                                     <h1>NO QUESTIONS FOUND !!</h1>
                                                 </CardContent>
                                             </Card>

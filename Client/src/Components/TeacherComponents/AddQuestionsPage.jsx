@@ -3,7 +3,7 @@ import axios from "axios";
 import { cn } from "@/lib/utils";
 import { questionSchema } from "@/Schemas/questionSchema.js";
 import { useMediaQuery } from '@custom-react-hooks/all';
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";  // change to @/Components
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import z from 'zod';
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/Components/ui/dialog";
+} from "@/components/ui/dialog";  // change to @/Components
 import {
   Drawer,
   DrawerClose,
@@ -24,9 +24,9 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/Components/ui/drawer";
-import { Input } from "@/Components/ui/input";
-import { Label } from "@/Components/ui/label";
+} from "@/components/ui/drawer";// change to @/Components
+import { Input } from "@/components/ui/input";// change to @/Components
+import { Label } from "@/components/ui/label";// change to @/Components
 
 function AddQuestionPage({ className }) {
   const [open, setOpen] = useState(false);

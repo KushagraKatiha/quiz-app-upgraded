@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useMediaQuery } from '@custom-react-hooks/all';
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";// change to @/Components
 import {
     Dialog,
     DialogContent,
@@ -10,7 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/Components/ui/dialog";
+} from "@/components/ui/dialog";// change to @/Components
 import {
     Drawer,
     DrawerClose,
@@ -20,7 +20,7 @@ import {
     DrawerHeader,
     DrawerTitle,
     DrawerTrigger,
-} from "@/Components/ui/drawer";
+} from "@/components/ui/drawer";// change to @/Components
 
 function TestInstruction({ onStartTest }) {
     const [open, setOpen] = useState(true);

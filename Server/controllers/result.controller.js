@@ -40,7 +40,7 @@ const getResults = asyncHandler(async (req, res) => {
     let results;
     if (req.user.type === 'teacher') {
         // Fetch all results for teacher
-        results = await Result.find().populate('student', 'name');
+        results = await Result.find({teacher: req.user._id}).populate('student', 'name');
     } else {
         // Fetch results for student
         results = await Result.find({ student: req.user._id }).populate('student', 'name');
