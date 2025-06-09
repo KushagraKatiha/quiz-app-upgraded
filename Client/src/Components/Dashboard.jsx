@@ -108,7 +108,7 @@ function Dashboard() {
                 <div className='ml-2 absolute top-32'>
                     {/* profile image container */}
                     <div className='rounded-full border-4 overflow-hidden border-solid w-36 relative bottom-16'>
-                        <img src={user?.profileImg || "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600"} alt="profile_img" />
+                        <img src={user?.profileImg || "https://www.pngmart.com/files/23/Profile-PNG-Photo.png"} alt="profile_img" />
                     </div>
                     <div className='ml-2 md:ml-3 -mt-14'>
                         <h1 className='text-green text-xl font-bold '>{user && user.name || 'YOUR_NAME'}<span className='text-brown text-xs font-light'>{" "}{user.type}</span></h1>

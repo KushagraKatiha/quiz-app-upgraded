@@ -8,6 +8,7 @@ import Dashboard from './Components/Dashboard.jsx'
 import AttemptQuizPage from './Components/StudentComponents/AttemptQuizPage.jsx'
 import QuizPage from './Components/StudentComponents/QuizPage.jsx'
 import ResultPage from './Components/ResultPage.jsx'
+import ResetPassword from './Components/ResetPassword.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -17,6 +18,7 @@ const router = createBrowserRouter(
       <Route path='/take-test' element={<AttemptQuizPage/>} />
       <Route path='/take-test/:subject/:teacherName' element={<QuizPage />} />
       <Route path='/get-result' element={<ResultPage />} />
+      <Route path='/reset-password/:forgetPasswordToken' element={<ResetPassword />} />
     </Route>
   )
 )

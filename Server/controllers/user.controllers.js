@@ -8,6 +8,30 @@ import sendMail from '../utils/sendEmail.js'
 import deleteFromCloudinary from '../utils/deleteFromCloudinary.js'
 import crypto from 'crypto'
 
+const sendWelcomeEmail = async (name, email, type) => {
+    const subject = "Welcome to The Quizeee!";
+    const content = `
+    Dear ${name},
+
+    Welcome to The Quizeee! We're thrilled to have you join us as a ${type}.
+
+    With The Quizeee, you can:
+    ${type === 'teacher' ? 
+        '- Create and manage quizzes\n- Track student performance\n- Generate detailed reports' 
+        : 
+        '- Take quizzes at your convenience\n- Track your progress\n- View your performance analytics'}
+
+    Get started by logging into your account and exploring our features.
+
+    If you have any questions or need assistance, feel free to reach out to our support team.
+
+    Best regards,
+    The Quizeee Team
+    `;
+
+    await sendMail(email, subject, content);
+};
+
 const register = asyncHandler(async (req, res, next) => {
     try {
         const { name, email, password, confirmPassword, type } = req.body;
@@ -38,6 +62,14 @@ const register = asyncHandler(async (req, res, next) => {
 
         if (!user) {
             throw new ApiError(500, "Failed to create user !", false);
+        }
+
+        // Send welcome email after successful registration
+        try {
+            await sendWelcomeEmail(name, email, type);
+        } catch (emailError) {
+            console.error("Error sending welcome email:", emailError);
+            // Don't throw error here, as registration was successful
         }
 
         const userToBeSent = await User.findById(user._id).select('-password');
@@ -285,7 +317,7 @@ const forgetPassword = asyncHandler(async (req, res) => {
 
         await user.save();
 
-        const resetPasswordLink = `http://localhost:${process.env.PORT}/user/reset-password/${forgetPasswordToken}`;
+        const resetPasswordLink = `http://localhost:${process.env.CLIENT_PORT}/reset-password/${forgetPasswordToken}`;
         const content = `Click on the link below to reset your password\n${resetPasswordLink}`;
         await sendMail(email, 'Reset Password', content);
         res.status(200).json(new ApiResponse(200, 'Forget password email sent successfully', true, null));

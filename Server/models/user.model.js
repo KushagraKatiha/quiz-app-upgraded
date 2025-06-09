@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import JWT from 'jsonwebtoken'
 
+// create user ( username varchar(max) not null)
+
 const userSchema = new mongoose.Schema({
     name:{
         type: String,

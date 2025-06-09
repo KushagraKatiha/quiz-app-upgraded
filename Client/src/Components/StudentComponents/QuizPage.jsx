@@ -72,7 +72,7 @@ function QuizPage() {
                             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                             const image = canvas.toDataURL("image/jpeg");
                             socket.emit("video_frame", { image });
-                        }, 2000);
+                        }, 10000);
                         
                         setIntervalRef(newInterval);
                         
